@@ -46,7 +46,7 @@ into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO
 
 ## GPIO port considerations
 
-The Pico has 2 GPIO port ranges avialable for external connections: GPIO0 - GPIO22 (= 23 ports) and GPIO25 - GPIO27 (= 3 ports). A PIO state machine can sample only
+The Pico has 2 GPIO port ranges avialable for external connections: GPIO0 - GPIO22 (= 23 ports) and GPIO26 - GPIO28 (= 3 ports). A PIO state machine can sample only
 consecutive pins. With the __write__ state machines sampling D0-D7, this means that there are only 15 GPIO ports left for state machine sampling.
 
 So, the Pico simply doesn't have enough GPIO ports for A0-A15 plus &Phi;0 plus R/W. Therefore the /DEVSEL, /IOSEL and /IOSTRB have to be used. However, a PIO state
@@ -54,11 +54,12 @@ machine can only wait on a single pin. Using multiple PIO state machines is no v
 The way out is to externally combine /DEVSEL, /IOSEL and /IOSTRB into a single ENBL line. Together with the 12 address lines necessary to support an expansion ROM,
 this approach requires only 13 GPIO ports.
 
-The 2 spare GPIO ports in the GPIO0 - GPIO22 range are especially valuable as the GPIO25 - GPIO27 range can't be used by a built-in UART, only by a built-in I2C
-controller. Note: Likely, a PIO-based UART can use GPIO25 - GPIO27.
+The 2 spare GPIO ports in the GPIO0 - GPIO22 range are especially valuable as the GPIO26 - GPIO28 range can't be used by a built-in UART, only by a built-in I2C
+controller.
 
+This is the actual pinout for the demo program - the brackets mark usage ideas: 
 | GPIO    | Usage     |
-|:-------:|:---------:|
+|:--------|:----------|
 | 0       | (UART TX) |
 | 1       | (UART RX) |
 | 2 - 13  | A0 - A11  |
@@ -67,3 +68,31 @@ controller. Note: Likely, a PIO-based UART can use GPIO25 - GPIO27.
 | 26      | ENBL      |
 | 27      | (IRQ)     |
 | 28      | (RDY)     |
+
+## More GPIO port considerations
+
+A built-in SPI controller (or a built-in UART with H/W flow control) requires 4 spare GPIO ports in the GPIO0 - GPIO22 range. This requirement can be accommodated by
+omitting the expansion ROM support. With only the slot ROM, A0-A7 are sufficient. However, in order to still be able to distinguish between /DEVSEL and /IOSEL, one
+of those two needs to be connected to a PGIO port - in addion to combining them both to the ENBL line via an AND gate.
+
+This is a potential pinout - the brackets mark usage ideas:
+| GPIO    | Usage     |
+|:--------|:----------|
+| 0       | (SPI RX)  |
+| 1       | (SPI CSn) |
+| 2       | (SPI SCK) |
+| 3       | (SPI TX)  |
+| 4 - 11  | A0 - A7   |
+| 12      | DEVSEL    |
+| 13      | R/W       |
+| 14 - 21 | D0 - D7   |
+| 22      | ENBL      |
+| 26      | (NMI)     |
+| 27      | (IRQ)     |
+| 28      | (RDY)     |
+
+With this setup, the slot ROM firmware is identical for all slots. Therefore, it needs to use the traditional method from _Apple II Reference Manual_ page 81/82 to
+work in all slots - and it needs to use the "LDA/STA $BFFF,x trick" for accessing $C0n0 - $C0nE to avoid phantom reads of the language card soft switches.
+
+Banking of multiple slot ROM pages via a bank register in the $C0n0 - $C0nE slot I/O space is an obvious way to mitigate potential firmware space shortage. Doing so
+is a matter of adding a single line of C code to the ARM core 1 code.
