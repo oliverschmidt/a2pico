@@ -10,7 +10,8 @@ The only additional hardware strictly necessary is an AND gate with (at least) 3
 
 ## Usage
 
-1. Flash the __demo.uf2__ file to the Pico as usual, but don't remove the USB cable from the Pico.
+1. Flash the [demo.uf2](https://github.com/a2retrosystems/A2retroNET/releases/latest/download/demo.uf2) file to the Pico as usual, but don't remove the USB cable
+from the Pico.
 
 2. Turn off the Apple II.
 
@@ -68,8 +69,7 @@ machine can only wait on a single pin. Using multiple PIO state machines is no v
 out is to externally combine /DEVSEL, /IOSEL and /IOSTRB into a single ENBL line. This "&Phi;0 replacement" allows to reduce the state machine sampling to A0-A11
 necessary for supporting an expansion ROM plus R/W (= 13 ports).
 
-The two spare GPIO ports in the GPIO0 - GPIO22 range are especially valuable as the GPIO26 - GPIO28 range can't be used by a built-in UART, only by a built-in I2C
-controller.
+The two spare GPIO ports in the GPIO0 - GPIO22 range are especially valuable as the GPIO26 - GPIO28 range can't be used by a UART, only by an I2C controller.
 
 This is the actual pinout for the demo program - the brackets mark usage ideas:
 | GPIO    | Usage     |
@@ -85,9 +85,9 @@ This is the actual pinout for the demo program - the brackets mark usage ideas:
 
 ## More GPIO port considerations
 
-A built-in SPI controller (or a built-in UART with H/W flow control) requires four spare GPIO ports in the GPIO0 - GPIO22 range. This requirement can be accommodated
-by omitting the expansion ROM support. With only the slot ROM, A0-A7 are sufficient. However, in order to still be able to distinguish between /DEVSEL and /IOSEL,
-one of those two needs to be connected to a PGIO port - in addition to combining them both to the ENBL line via an AND gate.
+An SPI controller (or a UART with H/W flow control) requires four spare GPIO ports in the GPIO0 - GPIO22 range. This requirement can be accommodated by omitting the
+expansion ROM support. With only the slot ROM, A0-A7 are sufficient. However, in order to still be able to distinguish between /DEVSEL and /IOSEL, one of those two
+needs to be connected to a PGIO port - in addition to combining them both to the ENBL line via an AND gate.
 
 This is a potential pinout w/o expansion ROM - the brackets mark usage ideas:
 | GPIO    | Usage     |
