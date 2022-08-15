@@ -87,7 +87,7 @@ This is the actual pinout for the demo program - the brackets mark usage ideas:
 
 An SPI controller (or a UART with H/W flow control) requires four spare GPIO ports in the GPIO0 - GPIO22 range. This requirement can be accommodated by omitting the
 expansion ROM support. With only the slot ROM, A0-A7 are sufficient. However, in order to still be able to distinguish between /DEVSEL and /IOSEL, one of those two
-needs to be connected to a PGIO port - in addition to combining them both to the ENBL line via an AND gate.
+needs to be connected to a GPIO port - in addition to combining them both to the ENBL line via an AND gate.
 
 This is a potential pinout w/o expansion ROM - the brackets mark usage ideas:
 | GPIO    | Usage     |
