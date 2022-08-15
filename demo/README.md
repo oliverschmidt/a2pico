@@ -5,8 +5,8 @@ ROM ($C800-$CFFE). Additionally it emulates a simple UART-style interface ($C0n0
 
 The program comes with some 6502 firmware, which makes use of the three emulated items to interact with a terminal emulator connected via the Pico USB port.
 
-The only addional hardware strictly necessary is an AND gate with (at least) 3 inputs. However, it is strongly recommended to use a bus switch with (at least) 24 bits
-for level shifting between the 5V of the A2 and the 3.3V of the Pico.
+The only additional hardware strictly necessary is an AND gate with (at least) 3 inputs. However, it is strongly recommended to use a bus switch with (at least)
+24 bits for level shifting between the 5V of the A2 and the 3.3V of the Pico.
 
 ## Usage
 
@@ -87,7 +87,7 @@ This is the actual pinout for the demo program - the brackets mark usage ideas:
 
 A built-in SPI controller (or a built-in UART with H/W flow control) requires four spare GPIO ports in the GPIO0 - GPIO22 range. This requirement can be accommodated
 by omitting the expansion ROM support. With only the slot ROM, A0-A7 are sufficient. However, in order to still be able to distinguish between /DEVSEL and /IOSEL,
-one of those two needs to be connected to a PGIO port - in addion to combining them both to the ENBL line via an AND gate.
+one of those two needs to be connected to a PGIO port - in addition to combining them both to the ENBL line via an AND gate.
 
 This is a potential pinout w/o expansion ROM - the brackets mark usage ideas:
 | GPIO    | Usage     |
