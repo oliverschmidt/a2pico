@@ -1,7 +1,7 @@
 # Demo
 
 The program demostrates how the Pico can interact directly with the Apple II 1MHz slot bus. The program emulates both a slot ROM ($Cn00-$CnFF) as well a an expansion
-ROM ($C800-$CFFE). Additionally it emulates a simple UART-style interface ($C0n0) with two status bits for ready-to-send and ready-to-receive ($0n1).
+ROM ($C800-$CFFE). Additionally it emulates a simple UART-style interface ($C0n0) with two status bits for ready-to-send and ready-to-receive ($C0n1).
 
 The program comes with some 6502 firmware, which makes use of the three emulated items to interact with a terminal emulator connected via the Pico USB port.
 
@@ -22,7 +22,7 @@ from the Pico.
 Right after an Apple II Reset, the program creates an ACM CDC serial port on the USB host. It deliberately stops there and waits for a program to connect to the
 serial port on the USB host. At that point, the Pico is still invisible to the Apple II.
 
-5. Connect a terminal emulator (e.g. PuTTY) to the serial port @ 115200 bits/s.
+5. Connect a terminal emulator (e.g. [PuTTY](https://www.putty.org/)) to the serial port @ 115200 bits/s.
  
 After the terminal has asserted DTR (which most of them do implicitly), the program continues to start up and sends a banner to the terminal.
 
