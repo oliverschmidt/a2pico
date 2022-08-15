@@ -106,7 +106,7 @@ This is a potential pinout w/o expansion ROM - the brackets mark usage ideas:
 | 28      | (RDY)     |
 
 With this setup, the slot ROM firmware is identical for all slots. Therefore, it needs to use the traditional method from the _Apple II Reference Manual_, pages
-81/82 to work in all slots - and it needs to use the "LDA/STA $BFFF,x trick" for accessing $C0n0 - $C0nE to avoid phantom reads of the language card soft switches.
+81/82 to work in all slots.
 
 Banking of multiple slot ROM pages via a bank register in the $C0n0 - $C0nE slot I/O space is an obvious way to mitigate potential firmware space shortage. Doing so
 is a matter of adding a single line of C code to the ARM core 1 code.
