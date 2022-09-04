@@ -20,7 +20,7 @@ from the Pico.
 4. Turn on the Apple II.
 
 Right after an Apple II Reset, the program creates an ACM CDC serial port on the USB host. It deliberately stops there and waits for a program to connect to the
-serial port on the USB host. At that point, the Pico is still invisible to the Apple II.
+serial port on the USB host.
 
 5. Connect a terminal emulator (e.g. [PuTTY](https://www.putty.org/)) to the serial port @ 115200 bits/s.
  

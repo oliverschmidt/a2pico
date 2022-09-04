@@ -28,50 +28,15 @@ SOFTWARE.
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 
-#include "bus.pio.h"
-
 void board();
 
 int main() {
+    multicore_launch_core1(board);
+
     stdio_init_all();
 
     while (!stdio_usb_connected()) {
     }
-
-    for (uint gpio = gpio_addr; gpio < gpio_addr + size_addr; gpio++) {
-        gpio_init(gpio);
-        gpio_set_pulls(gpio, false, false);  // floating
-    }
-
-    for (uint gpio = gpio_data; gpio < gpio_data + size_data; gpio++) {
-        pio_gpio_init(pio0, gpio);
-        gpio_set_pulls(gpio, false, false);  // floating
-    }
-
-    gpio_init(gpio_enbl);
-    gpio_pull_up(gpio_enbl);
-
-    gpio_init(gpio_irq);
-    gpio_pull_up(gpio_irq);
-
-    gpio_init(gpio_nmi);
-    gpio_pull_up(gpio_nmi);
-
-    gpio_init(gpio_led);
-    gpio_set_dir(gpio_led, GPIO_OUT);
-
-    uint offset;
-
-    offset = pio_add_program(pio0, &enbl_program);
-    enbl_program_init(offset);
-
-    offset = pio_add_program(pio0, &write_program);
-    write_program_init(offset);
-
-    offset = pio_add_program(pio0, &read_program);
-    read_program_init(offset);
-
-    multicore_launch_core1(board);
 
     puts("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
 
