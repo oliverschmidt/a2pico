@@ -54,8 +54,8 @@ int main() {
     gpio_init(gpio_irq);
     gpio_pull_up(gpio_irq);
 
-    gpio_init(gpio_rdy);
-    gpio_pull_up(gpio_rdy);
+    gpio_init(gpio_nmi);
+    gpio_pull_up(gpio_nmi);
 
     gpio_init(gpio_led);
     gpio_set_dir(gpio_led, GPIO_OUT);

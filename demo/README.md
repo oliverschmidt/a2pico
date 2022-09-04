@@ -81,7 +81,7 @@ This is the actual pinout for the demo program - the brackets mark usage ideas:
 | 15 - 22 | D0 - D7   |
 | 26      | ENBL      |
 | 27      | (IRQ)     |
-| 28      | (RDY)     |
+| 28      | (NMI)     |
 
 ## More GPIO port considerations
 
@@ -103,7 +103,7 @@ This is a potential pinout w/o expansion ROM - the brackets mark usage ideas:
 | 15 - 22 | D0 - D7   |
 | 26      | ENBL      |
 | 27      | (IRQ)     |
-| 28      | (RDY)     |
+| 28      | (NMI)     |
 
 With this setup, the slot ROM firmware is identical for all slots. Therefore, it needs to use the traditional method from the _Apple II Reference Manual_, pages
 81/82 to work in all slots.
