@@ -49,7 +49,7 @@ int main() {
     }
 
     gpio_init(gpio_enbl);
-    gpio_set_pulls(gpio_enbl, false, false); // floating
+    gpio_pull_up(gpio_enbl);
 
     gpio_init(gpio_irq);
     gpio_pull_up(gpio_irq);
