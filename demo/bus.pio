@@ -31,7 +31,6 @@ SOFTWARE.
 .define public gpio_addr    2   // 12 pins
 .define public gpio_rw      14
 .define public gpio_data    15  //  8 pins
-.define public gpio_led     25
 .define public gpio_enbl    26  // DEVSEL | IOSEL | IOSTRB
 .define public gpio_irq     27
 .define public gpio_nmi     28

@@ -26,11 +26,13 @@ SOFTWARE.
 
 #include "bus.pio.h"
 
+#include "board.h"
+
 extern const __attribute__((aligned(4))) uint8_t firmware[];
 
-static bool __not_in_flash("active") active;
+volatile bool __not_in_flash("active") active;
 
-void __not_in_flash_func(board)() {
+void __not_in_flash_func(board)(void) {
     for (uint gpio = gpio_addr; gpio < gpio_addr + size_addr; gpio++) {
         gpio_init(gpio);
         gpio_set_pulls(gpio, false, false);  // floating
@@ -50,9 +52,6 @@ void __not_in_flash_func(board)() {
     gpio_init(gpio_nmi);
     gpio_pull_up(gpio_nmi);
 
-    gpio_init(gpio_led);
-    gpio_set_dir(gpio_led, GPIO_OUT);
-
     uint offset;
 
     offset = pio_add_program(pio0, &enbl_program);
@@ -70,10 +69,6 @@ void __not_in_flash_func(board)() {
         uint32_t io   = enbl & 0x0F00;  // IOSTRB or IOSEL
         uint32_t strb = enbl & 0x0800;  // IOSTRB
         uint32_t read = enbl & 0x1000;  // R/W
-
-        if (addr == 0x0FFF) {
-            active = false;
-        }
 
         if (read) {
             if (!io) {  // DEVSEL
@@ -105,8 +100,8 @@ void __not_in_flash_func(board)() {
 
         if (io && !strb) {
             active = true;
+        } else if (addr == 0x0FFF) {
+            active = false;
         }
-
-        gpio_put(gpio_led, active);
     }
 }

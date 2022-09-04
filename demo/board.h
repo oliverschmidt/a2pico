@@ -24,41 +24,11 @@ SOFTWARE.
 
 */
 
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "pico/multicore.h"
+#ifndef _BOARD_H
+#define _BOARD_H
 
-#include "board.h"
+extern volatile bool active;
 
-void main(void) {
-    multicore_launch_core1(board);
+void board(void);
 
-    gpio_init(PICO_DEFAULT_LED_PIN);
-    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-
-    stdio_init_all();
-
-    while (!stdio_usb_connected()) {
-    }
-
-    puts("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
-
-    while (true) {
-        if (stdio_usb_connected()) {
-            if (multicore_fifo_rvalid()) {
-                putchar(multicore_fifo_pop_blocking());
-            }
-        }
-
-        int data = getchar_timeout_us(0);
-        if (data != PICO_ERROR_TIMEOUT) {
-            if (multicore_fifo_wready()) {
-                multicore_fifo_push_blocking(data);
-            } else {
-                putchar('\a');
-            }
-        }
-
-        gpio_put(PICO_DEFAULT_LED_PIN, active);
-    }
-}
+#endif
