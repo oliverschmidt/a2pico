@@ -27,14 +27,21 @@ SOFTWARE.
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
+#ifdef RASPBERRYPI_PICO_W
+#include "pico/cyw43_arch.h"
+#endif
 
 #include "board.h"
 
 void main(void) {
     multicore_launch_core1(board);
 
+#ifdef RASPBERRYPI_PICO_W
+    cyw43_arch_init();
+#else
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+#endif
 
     stdio_init_all();
 
@@ -59,6 +66,10 @@ void main(void) {
             }
         }
 
+#ifdef RASPBERRYPI_PICO_W
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, active);
+#else
         gpio_put(PICO_DEFAULT_LED_PIN, active);
+#endif
     }
 }
