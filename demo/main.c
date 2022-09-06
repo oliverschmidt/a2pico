@@ -31,7 +31,14 @@ SOFTWARE.
 #include "pico/cyw43_arch.h"
 #endif
 
+#include "bus.pio.h"
 #include "board.h"
+
+static bool res;
+
+void res_callback(uint gpio, uint32_t events) {
+    res = true;
+}
 
 void main(void) {
     multicore_launch_core1(board);
@@ -43,12 +50,20 @@ void main(void) {
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
 #endif
 
+    gpio_init(gpio_irq);
+    gpio_pull_up(gpio_irq);
+
+    gpio_init(gpio_res);
+    gpio_set_irq_enabled_with_callback(gpio_res, GPIO_IRQ_EDGE_RISE, true, &res_callback);
+
     stdio_init_all();
 
     while (!stdio_usb_connected()) {
     }
 
-    puts("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
+    printf("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
+
+    res = false;
 
     while (true) {
         if (stdio_usb_connected()) {
@@ -64,6 +79,11 @@ void main(void) {
             } else {
                 putchar('\a');
             }
+        }
+
+        if (res) {
+            printf(" RES ");
+            res = false;
         }
 
 #ifdef RASPBERRYPI_PICO_W

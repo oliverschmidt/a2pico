@@ -19,8 +19,7 @@ from the Pico.
 
 4. Turn on the Apple II.
 
-Right after an Apple II Reset, the program creates an ACM CDC serial port on the USB host. It deliberately stops there and waits for a program to connect to the
-serial port on the USB host.
+The program creates an ACM CDC serial port on the USB host. It deliberately stops there and waits for a program to connect to the serial port on the USB host.
 
 5. Connect a terminal emulator (e.g. [PuTTY](https://www.putty.org/)) to the serial port @ 115200 bits/s.
  
@@ -41,6 +40,8 @@ After the terminal has asserted DTR (which most of them do implicitly), the prog
 12. Quit the terminal emulator (or de-assert DTR, if possible). After eight further chars entered on the Apple II, the Apple II firmware makes the speaker beep.
 
 13. Connect the terminal emulator again (or assert DTR again) and the eight chars are sent to it.
+
+14. Hit Ctrl-Reset. The string ` RES ` is displayed on the terminal.
 
 ## Theory of operation
 
@@ -81,7 +82,7 @@ This is the actual pinout for the demo program - the brackets mark usage ideas:
 | 15 - 22 | D0 - D7   |
 | 26      | ENBL      |
 | 27      | (IRQ)     |
-| 28      | (NMI)     |
+| 28      | RES       |
 
 ## More GPIO port considerations
 
@@ -103,7 +104,7 @@ This is a potential pinout w/o expansion ROM - the brackets mark usage ideas:
 | 15 - 22 | D0 - D7   |
 | 26      | ENBL      |
 | 27      | (IRQ)     |
-| 28      | (NMI)     |
+| 28      | (RES)     |
 
 With this setup, the slot ROM firmware is identical for all slots. Therefore, it needs to use the traditional method from the _Apple II Reference Manual_, pages
 81/82 to work in all slots.
