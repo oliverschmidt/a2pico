@@ -1,7 +1,7 @@
 # Demo
 
 The program demostrates how the Pico can interact directly with the Apple II 1MHz slot bus. The program emulates both a slot ROM ($Cn00-$CnFF) as well a an expansion
-ROM ($C800-$CFFE). Additionally it emulates a simple UART-style interface ($C0n0) with two status bits for ready-to-send and ready-to-receive ($C0n1).
+ROM ($C800-$CFFF). Additionally it emulates a simple UART-style interface ($C0n0) with two status bits for ready-to-send and ready-to-receive ($C0n1).
 
 The program comes with some 6502 firmware, which makes use of the three emulated items to interact with a terminal emulator connected via the Pico USB port.
 
@@ -33,7 +33,7 @@ After the terminal has asserted DTR (which most of them do implicitly), the prog
  
 9. Enter chars on the Apple II and the terminal. They are displayed on the counterside.
 
-10. Press `ESC`on the Apple II to quit to the monitor. After eight further chars entered on the terminal, the program sends a BELL to the terminal.
+10. Press `ESC` on the Apple II to quit to the monitor. After eight further chars entered on the terminal, the program sends a BELL to the terminal.
 
 11. Enter `Cn00G` again and the eight chars are displayed.
 
@@ -41,7 +41,9 @@ After the terminal has asserted DTR (which most of them do implicitly), the prog
 
 13. Connect the terminal emulator again (or assert DTR again) and the eight chars are sent to it.
 
-14. Hit Ctrl-Reset. The string ` RES ` is displayed on the terminal.
+14. Press `ESC` on the terminal. An interrupt handler on the Apple II inverts the character in the lower right corner of the screen.
+
+15. Press `Ctrl-Reset` on the Apple II. The string `RES` is displayed on the terminal.
 
 ## Theory of operation
 
@@ -81,7 +83,7 @@ This is the actual pinout for the demo program - the brackets mark usage ideas:
 | 14      | R/W       |
 | 15 - 22 | D0 - D7   |
 | 26      | ENBL      |
-| 27      | (IRQ)     |
+| 27      | IRQ       |
 | 28      | RES       |
 
 ## More GPIO port considerations

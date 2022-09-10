@@ -46,14 +46,38 @@ slot  = count + 1
     stx $37     ; CSWH
 
     ; Access expansion ROM
-    bit $CFFF
+    lda #$C0 + slot
+    sta $07F8   ; MSLOT
+    bit $CFFF   ; CLRROM
     jsr banner
+
+    ; Save IRQ vector
+    lda $03FE   ; IRQLOCL
+    ldx $03FF   ; IRQLOCH
+    sta $0478 + slot
+    stx $04F8 + slot
+
+    ; Set IRQ vector
+    lda #<interrupt
+    ldx #>interrupt
+    sei
+    sta $03FE   ; IRQLOCL
+    stx $03FF   ; IRQLOCH
+    cli
 
     ; Try to read char from keyboard
 @1: jsr getkey
     bcc @4
     cmp #$1B    ; ESC
     bne @2
+
+    ; Restore IRQ vector
+    lda $0478 + slot
+    ldx $04F8 + slot
+    sei
+    sta $03FE   ; IRQLOCL
+    stx $03FF   ; IRQLOCH
+    cli
     rts
 
     ; Send char if TX FIFO not full
@@ -73,6 +97,14 @@ slot  = count + 1
     ora #$80
     jsr $FDED   ; COUT
     jmp @1
+
+interrupt:
+    lda $07F7
+    eor #$80
+    sta $07F7
+    lda $45
+    sta $C081 + slot << 4
+    rti
 
 .endscope
 .endrep

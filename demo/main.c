@@ -37,6 +37,7 @@ SOFTWARE.
 static bool res;
 
 void res_callback(uint gpio, uint32_t events) {
+    gpio_set_dir(gpio_irq, GPIO_IN);
     res = true;
 }
 
@@ -74,7 +75,10 @@ void main(void) {
 
         int data = getchar_timeout_us(0);
         if (data != PICO_ERROR_TIMEOUT) {
-            if (multicore_fifo_wready()) {
+            if (data == 27) {
+                gpio_set_dir(gpio_irq, GPIO_OUT);
+            }
+            else if (multicore_fifo_wready()) {
                 multicore_fifo_push_blocking(data);
             } else {
                 putchar('\a');

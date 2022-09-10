@@ -90,6 +90,9 @@ void __time_critical_func(board)(void) {
                     case 0x0:
                         sio_hw->fifo_wr = data;
                         break;
+                    case 0x1:
+                        gpio_set_dir(gpio_irq, GPIO_IN);
+                        break;
                 }
             }
         }
