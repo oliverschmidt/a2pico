@@ -79,7 +79,7 @@ void __time_critical_func(board)(void) {
                         break;
                 }
             } else {
-                if (!strb || active) {
+                if (!strb || (active && (addr != 0x0FFF))) {
                     pio_sm_put(pio0, sm_read, firmware[addr]);
                 }
             }
