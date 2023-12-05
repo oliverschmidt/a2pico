@@ -1,4 +1,4 @@
-# A2retroNET RP2040
+# A2retroNET
 
 _Directly connecting the [Raspberry Pi RP2040](https://www.raspberrypi.com/products/rp2040/) to the Apple II slot bus_
 
