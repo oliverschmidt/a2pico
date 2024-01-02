@@ -21,7 +21,8 @@ add_custom_command(
         MAIN_DEPENDENCY firmware.S
         DEPENDS firmware.cfg
         OUTPUT firmware.rom
-        VERBATIM)
+        VERBATIM
+        )
 
 target_sources(${PROJECT_NAME} PRIVATE
         main.c
