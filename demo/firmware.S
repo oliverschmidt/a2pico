@@ -2,12 +2,6 @@
 
 /*
 
-cl65 firmware.S -C firmware.cfg -o firmware.bin
-
-*/
-
-/*
-
 MIT License
 
 Copyright (c) 2022 Oliver Schmidt (https://a2retro.de/)

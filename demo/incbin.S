@@ -3,4 +3,4 @@
 .type firmware, %object
 .balign 4
 firmware:
-.incbin "../firmware.bin"
+.incbin "../firmware.rom"
