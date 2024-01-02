@@ -28,6 +28,7 @@ SOFTWARE.
 #define _BOARD_H
 
 extern volatile bool active;
+extern volatile bool reset;
 
 void board(void);
 

@@ -28,15 +28,9 @@ SOFTWARE.
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
 
-#include "bus.pio.h"
+#include <a2pico.h>
+
 #include "board.h"
-
-static bool res;
-
-void res_callback(uint gpio, uint32_t events) {
-    gpio_set_dir(gpio_irq, GPIO_IN);
-    res = true;
-}
 
 void main(void) {
     multicore_launch_core1(board);
@@ -46,20 +40,12 @@ void main(void) {
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
 #endif
 
-    gpio_init(gpio_irq);
-    gpio_pull_up(gpio_irq);
-
-    gpio_init(gpio_res);
-    gpio_set_irq_enabled_with_callback(gpio_res, GPIO_IRQ_EDGE_RISE, true, &res_callback);
-
     stdio_init_all();
 
     while (!stdio_usb_connected()) {
     }
 
     printf("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
-
-    res = false;
 
     while (true) {
         if (stdio_usb_connected()) {
@@ -71,7 +57,7 @@ void main(void) {
         int data = getchar_timeout_us(0);
         if (data != PICO_ERROR_TIMEOUT) {
             if (data == 27) {
-                gpio_set_dir(gpio_irq, GPIO_OUT);
+                a2pico_irq(true);
             }
             else if (multicore_fifo_wready()) {
                 multicore_fifo_push_blocking(data);
@@ -80,9 +66,9 @@ void main(void) {
             }
         }
 
-        if (res) {
-            printf(" RES ");
-            res = false;
+        if (reset) {
+            reset = false;
+            printf(" RESET ");
         }
 
 #ifdef PICO_DEFAULT_LED_PIN
