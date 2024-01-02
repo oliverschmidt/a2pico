@@ -93,11 +93,11 @@ slot  = count + 1
     jmp @1
 
 interrupt:
+    sta $C081 + slot << 4
     lda $07F7
     eor #$80
     sta $07F7
     lda $45
-    sta $C081 + slot << 4
     rti
 
 .endscope
