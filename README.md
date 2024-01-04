@@ -2,7 +2,7 @@
 
 A2Pico is about Apple II peripheral cards based on the [Raspberry Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/). It consists of two parts:
 * Several [hardware](#a2pico-hardware) reference designs
-* A [software](#a2pico-software) library helping to build
+* A [software](#a2pico-software) library for projects based on A2Pico
 
 ## A2Pico Hardware
 
@@ -45,6 +45,8 @@ into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO
 | 28     | TRX1 DIR |
 
 ## A2Pico Software
+
+### Projects based on A2Pico
 
 * Apple2-IO-RPi (https://github.com/oliverschmidt/apple2-io-rpi)
 * Apple II Pi (https://github.com/oliverschmidt/apple2pi)
