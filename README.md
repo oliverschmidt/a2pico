@@ -35,7 +35,7 @@ into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO
 | 15     | R/W      |
 | 16     | $\Phi$ 1 |
 | 17     | RESET    |
-| 18     | ! IRQ    |
+| 18     | /IRQ     |
 | 19     | SPI0 TX  |
 | 20     | SPI0 RX  |
 | 21     | SPI0 CSn |
