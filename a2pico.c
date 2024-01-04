@@ -43,20 +43,30 @@ void a2pico_init(PIO pio) {
         gpio_set_pulls(gpio, false, false);  // floating
     }
 
-    gpio_init(GPIO_IRQ);
-    gpio_pull_up(GPIO_IRQ);
+    pio_gpio_init(pio, GPIO_ADDR_OE);
+    pio_gpio_init(pio, GPIO_DATA_OE);
+    pio_gpio_init(pio, GPIO_DATA_DIR);
+    pio_sm_set_pindirs_with_mask(pio, SM_ADDR, 7ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+    pio_sm_set_pins_with_mask(   pio, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
-    gpio_init(GPIO_RES);
-    gpio_pull_up(GPIO_RES);
+    gpio_init(GPIO_RESET);
+    gpio_set_pulls(GPIO_RESET, false, false);  // floating
+
+    gpio_init(GPIO_IRQ);
+    gpio_put(GPIO_IRQ, false);  // active high
+    gpio_set_dir(GPIO_IRQ, GPIO_OUT);
 
     uint offset;
 
-    offset = pio_add_program(pio0, &addr_program);
+    offset = pio_add_program(pio, &addr_program);
     addr_program_init(pio, offset);
 
-    offset = pio_add_program(pio0, &write_program);
+    offset = pio_add_program(pio, &write_program);
     write_program_init(pio, offset);
 
-    offset = pio_add_program(pio0, &read_program);
+    offset = pio_add_program(pio, &read_program);
     read_program_init(pio, offset);
+
+    offset = pio_add_program(pio, &dir_program);
+    dir_program_init(pio, offset);
 }

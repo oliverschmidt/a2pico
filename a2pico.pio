@@ -28,21 +28,28 @@ SOFTWARE.
 
 ///////////////////////////////////////////////////////////////////////////////
 
-.define public GPIO_ADDR     2  // 12 pins
-.define public GPIO_RW      14
-.define public GPIO_DATA    15  //  8 pins
-.define public GPIO_ENBL    23  // DEVSEL | IOSEL | IOSTRB
-.define public GPIO_IRQ     24
-.define public GPIO_RES     25
+.define public  GPIO_ENBL        2  // DEVSEL | IOSEL | IOSTRB
+.define public  GPIO_ADDR        3  // 12 pins
+.define public  GPIO_DATA        3  //  8 pins
+.define public  GPIO_RW         15
+.define public  GPIO_PHI1       16
+.define public  GPIO_RESET      17
+.define public  GPIO_IRQ        18  // active high
 
-.define public SIZE_ADDR    13  // incl. R/W
-.define public SIZE_DATA     8
+.define public  GPIO_ADDR_OE    26  // TRX addr output enable
+.define public  GPIO_DATA_OE    27  // TRX data output enable
+.define public  GPIO_DATA_DIR   28  // TRX data direction
 
-.define public SM_ADDR       0
-.define public SM_READ       1  // from Apple II perspective
-.define public SM_WRITE      2  // from Apple II perspective
+.define public  SIZE_ADDR       13  // incl. R/W
+.define public  SIZE_DATA        8
 
-.define IRQ_WRITE            4
+.define public  SM_ADDR          0
+.define public  SM_READ          1  // from Apple II perspective
+.define public  SM_WRITE         2  // from Apple II perspective
+.define public  SM_DIR           3
+
+.define         IRQ_WRITE        4
+.define         IRQ_DIR          5
 
 /*
 
@@ -69,9 +76,14 @@ Implementation of the Apple II peripheral bus protocol:
 
 idle:
     wait 1 gpio GPIO_ENBL       // wait for ENBL to rise
+
+    set pins, 0b10              // enable address bus transceiver
+
     wait 0 gpio GPIO_ENBL       // wait for ENBL to fall
 
     in pins, SIZE_ADDR          // shift A0-A11 + R/W into ISR
+
+    set pins, 0b01              // enable data bus transceiver
 
     jmp pin idle                // jump to 'idle' if R/W is high
 
@@ -90,6 +102,10 @@ static inline void addr_program_init(PIO pio, uint offset) {
     // autopush:        true
     // push_threshold:  SIZE_ADDR
     sm_config_set_in_shift(&c, false, true, SIZE_ADDR);
+
+    // set_base:        GPIO_ADDR_OE
+    // set_count:       2
+    sm_config_set_set_pins(&c, GPIO_ADDR_OE, 2);
 
     // pin:             GPIO_RW
     sm_config_set_jmp_pin(&c, GPIO_RW);
@@ -163,6 +179,8 @@ but this would have required two operations and destroyed OSR.
 
     pull block                  // pull data into OSR, block on empty FIFO
 
+    irq IRQ_DIR                 // set 'dir' IRQ
+
     out pins, SIZE_DATA         // shift OSR out to D0-D7
 
     set pindirs, 0xF side 0xF   // enable output of D0-D7
@@ -199,6 +217,39 @@ static inline void read_program_init(PIO pio, uint offset) {
 
     // state_machine:   SM_READ
     pio_sm_set_enabled(pio, SM_READ, true);
+}
+%}
+
+///////////////////////////////////////////////////////////////////////////////
+
+.program dir
+
+.wrap_target
+
+    wait 1 irq IRQ_DIR          // wait for 'dir' IRQ to be set and clear it
+
+    set pins, 1                 // set transceiver direction to output
+
+    wait 1 gpio GPIO_ENBL       // wait for ENBL to rise
+
+    set pins, 0                 // set transceiver direction to input
+
+.wrap
+
+% c-sdk {
+static inline void dir_program_init(PIO pio, uint offset) {
+    pio_sm_config c = dir_program_get_default_config(offset);
+
+    // set_base:        GPIO_DATA_DIR
+    // set_count:       1
+    sm_config_set_set_pins(&c, GPIO_DATA_DIR, 1);
+
+    // state_machine:   SM_DIR
+    // initial_pc:      offset
+    pio_sm_init(pio, SM_DIR, offset, &c);
+
+    // state_machine:   SM_DIR
+    pio_sm_set_enabled(pio, SM_DIR, true);
 }
 %}
 

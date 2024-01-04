@@ -33,8 +33,9 @@ SOFTWARE.
 #define SM_READ  1
 #define SM_WRITE 2
 
-#define GPIO_IRQ   24
-#define GPIO_RESET 25
+#define GPIO_PHI1  16
+#define GPIO_RESET 17
+#define GPIO_IRQ   18
 
 void a2pico_init(PIO pio);
 
@@ -62,7 +63,7 @@ static __always_inline void a2pico_resetcallback(gpio_irq_callback_t callback) {
 }
 
 static __always_inline void a2pico_irq(bool assert) {
-    gpio_set_dir(GPIO_IRQ, assert ? GPIO_OUT : GPIO_IN);
+    gpio_put(GPIO_IRQ, assert);  // active high
 }
 
 #endif
