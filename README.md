@@ -1,6 +1,6 @@
 # A2Pico
 
-A2Pico is about Apple II peripheral cards based on the [Raspberry Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/). It consists of two parts:
+A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/). It consists of two parts:
 * Several [hardware](#a2pico-hardware) reference designs
 * A [software](#a2pico-software) library for projects based on A2Pico
 
