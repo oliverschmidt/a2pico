@@ -33,8 +33,8 @@ SOFTWARE.
 #define SM_READ  1
 #define SM_WRITE 2
 
-#define GPIO_IRQ   27
-#define GPIO_RESET 28
+#define GPIO_IRQ   24
+#define GPIO_RESET 25
 
 void a2pico_init(PIO pio);
 

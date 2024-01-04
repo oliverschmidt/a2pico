@@ -31,9 +31,9 @@ SOFTWARE.
 .define public GPIO_ADDR     2  // 12 pins
 .define public GPIO_RW      14
 .define public GPIO_DATA    15  //  8 pins
-.define public GPIO_ENBL    26  // DEVSEL | IOSEL | IOSTRB
-.define public GPIO_IRQ     27
-.define public GPIO_RES     28
+.define public GPIO_ENBL    23  // DEVSEL | IOSEL | IOSTRB
+.define public GPIO_IRQ     24
+.define public GPIO_RES     25
 
 .define public SIZE_ADDR    13  // incl. R/W
 .define public SIZE_DATA     8
