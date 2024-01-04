@@ -4,9 +4,9 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pico](https://
 * Several [hardware](#a2pico-hardware) reference designs
 * A [software](#a2pico-software) library helping to build
 
-## A2Pico hardware
+## A2Pico Hardware
 
-### Theory of operation
+### Theory Of Operation
 
 /DEVSEL, /IOSEL and /IOSTRB are combined to ENBL via an AND gate.
 
@@ -23,13 +23,13 @@ that FIFO and processes the byte.
 In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte in time for the 6502 to pick it up. As soon as it has done so, it pushes the byte
 into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO and drives out the byte to the lines D0-D7 until the rising edge of ENBL.
 
-### GPIO mapping
+### GPIO Mapping
 
 | GPIO   | Usage    |
 |:------:|:--------:|
 | 0      | UART0 TX |
 | 1      | UART0 RX |
-| 3      | ENBL     |
+| 2      | ENBL     |
 | 3 - 14 | A0 - A11 |
 | 3 - 10 | D0 - D7  |
 | 15     | R/W      |
@@ -44,7 +44,7 @@ into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO
 | 27     | TRX1 OE  |
 | 28     | TRX1 DIR |
 
-## A2Pico software
+## A2Pico Software
 
 * Apple2-IO-RPi (https://github.com/oliverschmidt/apple2-io-rpi)
 * Apple II Pi (https://github.com/oliverschmidt/apple2pi)
