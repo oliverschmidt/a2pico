@@ -37,6 +37,11 @@ SOFTWARE.
 #define GPIO_RESET 17
 #define GPIO_IRQ   18
 
+#define GPIO_SPI0_TX  19
+#define GPIO_SPI0_RX  20
+#define GPIO_SPI0_CSN 21
+#define GPIO_SPI0_SCK 22
+
 void a2pico_init(PIO pio);
 
 static __always_inline uint32_t a2pico_getaddr(PIO pio) {
