@@ -48,6 +48,7 @@ into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO
 
 ### Projects based on A2Pico
 
+* A2retroNET (https://github.com/oliverschmidt/a2retronet)
 * Apple2-IO-RPi (https://github.com/oliverschmidt/apple2-io-rpi)
 * Apple II Pi (https://github.com/oliverschmidt/apple2pi)
 * Grappler+ (https://github.com/oliverschmidt/grappler-plus)
