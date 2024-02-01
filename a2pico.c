@@ -30,17 +30,13 @@ SOFTWARE.
 
 void a2pico_init(PIO pio) {
 
-    gpio_init(GPIO_ENBL);
+    pio_gpio_init(pio, GPIO_ENBL);
     gpio_set_pulls(GPIO_ENBL, false, false);  // floating
 
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
-        gpio_init(gpio);
-        gpio_set_pulls(gpio, false, false);  // floating
-    }
-
-    for (uint gpio = GPIO_DATA; gpio < GPIO_DATA + SIZE_DATA; gpio++) {
         pio_gpio_init(pio, gpio);
         gpio_set_pulls(gpio, false, false);  // floating
+        gpio_set_input_hysteresis_enabled(gpio, false);
     }
 
     pio_gpio_init(pio, GPIO_ADDR_OE);
@@ -66,7 +62,4 @@ void a2pico_init(PIO pio) {
 
     offset = pio_add_program(pio, &read_program);
     read_program_init(pio, offset);
-
-    offset = pio_add_program(pio, &dir_program);
-    dir_program_init(pio, offset);
 }
