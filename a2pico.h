@@ -54,7 +54,8 @@ static __always_inline uint32_t a2pico_getaddr(PIO pio) {
 }
 
 static __always_inline uint32_t a2pico_getdata(PIO pio) {
-    while (pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE))) {
+    uint retry = 32;
+    while (pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE)) && --retry) {
         tight_loop_contents();
     }
     return pio->rxf[SM_WRITE];
