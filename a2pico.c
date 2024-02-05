@@ -28,7 +28,41 @@ SOFTWARE.
 
 #include "a2pico.h"
 
+static PIO a2_pio;
+
+static struct {
+    uint          offset;
+    pio_sm_config config;
+} a2_sm[3];
+
+static void(*a2_resethandler)(bool);
+
+static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
+
+    if (events & GPIO_IRQ_EDGE_FALL) {
+        pio_set_sm_mask_enabled(a2_pio, 7ul, false);
+
+        void(*handler)(bool) = a2_resethandler;
+        if (handler) {
+            handler(true);
+        }
+    }
+
+    if (events & GPIO_IRQ_EDGE_RISE) {
+        for (uint sm = 0; sm < 3; sm++) {
+            pio_sm_init(a2_pio, sm, a2_sm[sm].offset, &a2_sm[sm].config);
+        }
+        pio_set_sm_mask_enabled(a2_pio, 7ul, true);
+
+        void(*handler)(bool) = a2_resethandler;
+        if (handler) {
+            handler(false);
+        }
+    }
+}
+
 void a2pico_init(PIO pio) {
+    a2_pio = pio;
 
     pio_gpio_init(pio, GPIO_ENBL);
     gpio_set_pulls(GPIO_ENBL, false, false);  // floating
@@ -52,14 +86,22 @@ void a2pico_init(PIO pio) {
     gpio_put(GPIO_IRQ, false);  // active high
     gpio_set_dir(GPIO_IRQ, GPIO_OUT);
 
-    uint offset;
+    a2_sm[SM_ADDR].offset = pio_add_program(pio, &addr_program);
+    a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
+    addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-    offset = pio_add_program(pio, &addr_program);
-    addr_program_init(pio, offset);
+    a2_sm[SM_READ].offset = pio_add_program(pio, &read_program);
+    a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
+    read_program_set_config(&a2_sm[SM_READ].config);
 
-    offset = pio_add_program(pio, &write_program);
-    write_program_init(pio, offset);
+    a2_sm[SM_WRITE].offset = pio_add_program(pio, &write_program);
+    a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
+    write_program_set_config(&a2_sm[SM_WRITE].config);
 
-    offset = pio_add_program(pio, &read_program);
-    read_program_init(pio, offset);
+    gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
+                                                 | GPIO_IRQ_EDGE_RISE, true, a2_reset);
+}
+
+void a2pico_resethandler(void(*handler)(bool)) {
+    a2_resethandler = handler;
 }

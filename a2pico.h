@@ -44,6 +44,8 @@ SOFTWARE.
 
 void a2pico_init(PIO pio);
 
+void a2pico_resethandler(void(*handler)(bool asserted));
+
 static __always_inline uint32_t a2pico_getaddr(PIO pio) {
     while (pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
         tight_loop_contents();
@@ -60,11 +62,6 @@ static __always_inline uint32_t a2pico_getdata(PIO pio) {
 
 static __always_inline void a2pico_putdata(PIO pio, uint32_t data) {
     pio->txf[SM_READ] = data;
-}
-
-static __always_inline void a2pico_resetcallback(gpio_irq_callback_t callback) {
-    gpio_set_irq_enabled_with_callback(GPIO_RESET, 
-                GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, callback, callback);
 }
 
 static __always_inline void a2pico_irq(bool assert) {

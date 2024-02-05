@@ -46,10 +46,8 @@ SOFTWARE.
 .define public  SM_ADDR          0
 .define public  SM_READ          1  // from Apple II perspective
 .define public  SM_WRITE         2  // from Apple II perspective
-.define public  SM_DIR           3
 
 .define         IRQ_WRITE        4
-.define         IRQ_DIR          5
 
 /*
 
@@ -75,6 +73,8 @@ Implementation of the Apple II peripheral bus protocol:
 .wrap_target
 
 idle:
+    set pins, 0b01              // enable data bus transceiver
+
     wait 1 gpio GPIO_ENBL [31]  // wait for ENBL to rise
                                 //   [31 cycles to allow read cycle to settle]
     set pins, 0b10              // enable address bus transceiver
@@ -83,8 +83,6 @@ idle:
 
     in pins, SIZE_ADDR          // shift A0-A11 + R/W into ISR
 
-    set pins, 0b01              // enable data bus transceiver
-
     jmp pin idle                // jump to 'idle' if R/W is high
 
     irq IRQ_WRITE               // set 'write' IRQ
@@ -92,30 +90,22 @@ idle:
 .wrap
 
 % c-sdk {
-static inline void addr_program_init(PIO pio, uint offset) {
-    pio_sm_config c = addr_program_get_default_config(offset);
+static inline void addr_program_set_config(pio_sm_config *c) {
 
     // in_base:         GPIO_ADDR
-    sm_config_set_in_pins(&c, GPIO_ADDR);
+    sm_config_set_in_pins(c, GPIO_ADDR);
 
     // shift_right:     false
     // autopush:        true
     // push_threshold:  SIZE_ADDR
-    sm_config_set_in_shift(&c, false, true, SIZE_ADDR);
+    sm_config_set_in_shift(c, false, true, SIZE_ADDR);
 
     // set_base:        GPIO_ADDR_OE
     // set_count:       2
-    sm_config_set_set_pins(&c, GPIO_ADDR_OE, 2);
+    sm_config_set_set_pins(c, GPIO_ADDR_OE, 2);
 
     // pin:             GPIO_RW
-    sm_config_set_jmp_pin(&c, GPIO_RW);
-
-    // state_machine:   SM_ADDR
-    // initial_pc:      offset
-    pio_sm_init(pio, SM_ADDR, offset, &c);
-
-    // state_machine:   SM_ADDR
-    pio_sm_set_enabled(pio, SM_ADDR, true);
+    sm_config_set_jmp_pin(c, GPIO_RW);
 }
 %}
 
@@ -133,23 +123,15 @@ static inline void addr_program_init(PIO pio, uint offset) {
 .wrap
 
 % c-sdk {
-static inline void write_program_init(PIO pio, uint offset) {
-    pio_sm_config c = write_program_get_default_config(offset);
+static inline void write_program_set_config(pio_sm_config *c) {
 
     // in_base:         GPIO_DATA
-    sm_config_set_in_pins(&c, GPIO_DATA);
+    sm_config_set_in_pins(c, GPIO_DATA);
 
     // shift_right:     false
     // autopush:        true
     // push_threshold:  SIZE_DATA
-    sm_config_set_in_shift(&c, false, true, SIZE_DATA);
-
-    // state_machine:   SM_WRITE
-    // initial_pc:      offset
-    pio_sm_init(pio, SM_WRITE, offset, &c);
-
-    // state_machine:   SM_WRITE
-    pio_sm_set_enabled(pio, SM_WRITE, true);
+    sm_config_set_in_shift(c, false, true, SIZE_DATA);
 }
 %}
 
@@ -178,27 +160,19 @@ static inline void write_program_init(PIO pio, uint offset) {
 .wrap
 
 % c-sdk {
-static inline void read_program_init(PIO pio, uint offset) {
-    pio_sm_config c = read_program_get_default_config(offset);
+static inline void read_program_set_config(pio_sm_config *c) {
 
     // out_base:        GPIO_DATA
     // out_count:       SIZE_DATA
-    sm_config_set_out_pins(&c, GPIO_DATA, SIZE_DATA);
+    sm_config_set_out_pins(c, GPIO_DATA, SIZE_DATA);
 
     // shift_right:     true
     // autopull:        false
     // pull_threshold:  SIZE_DATA
-    sm_config_set_out_shift(&c, true, false, SIZE_DATA);
+    sm_config_set_out_shift(c, true, false, SIZE_DATA);
 
     // sideset_base:    GPIO_DATA_DIR
-    sm_config_set_sideset_pins(&c, GPIO_DATA_DIR);
-
-    // state_machine:   SM_READ
-    // initial_pc:      offset
-    pio_sm_init(pio, SM_READ, offset, &c);
-
-    // state_machine:   SM_READ
-    pio_sm_set_enabled(pio, SM_READ, true);
+    sm_config_set_sideset_pins(c, GPIO_DATA_DIR);
 }
 %}
 

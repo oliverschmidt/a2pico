@@ -33,12 +33,11 @@ extern const __attribute__((aligned(4))) uint8_t firmware[];
 volatile bool active;
 volatile bool reset;
 
-static void __time_critical_func(callback)(uint gpio, uint32_t events) {
-    if (events & GPIO_IRQ_EDGE_FALL) {
+static void __time_critical_func(handler)(bool asserted) {
+    if (asserted) {
         a2pico_irq(false);
         active = false;
-    }
-    if (events & GPIO_IRQ_EDGE_RISE) {
+    } else {
         reset = true;
     }
 }
@@ -47,7 +46,7 @@ void __time_critical_func(board)(void) {
 
     a2pico_init(pio0);
 
-    a2pico_resetcallback(&callback);
+    a2pico_resethandler(&handler);
 
     while (true) {
         uint32_t pico = a2pico_getaddr(pio0);
