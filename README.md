@@ -6,7 +6,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 ## Background
 
-Soon after the introduction of the Raspberry Pi Pico in 20221 [Glenn Jones](https://github.com/a2retrosystems) and I started to experiment with directly connecting
+Soon after the introduction of the Raspberry Pi Pico in 2021 [Glenn Jones](https://github.com/a2retrosystems) and I started to experiment with directly connecting
 it to the Apple II slot bus. In 2022 I published a working Pico firmware on GitHub. Based on that we started to implement the _A2retroNET_ project which I presented
 at KanasFest 2023 (https://youtu.be/UMr2erIUDwU).
 
