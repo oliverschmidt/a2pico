@@ -79,6 +79,9 @@ void a2pico_init(PIO pio) {
     pio_sm_set_pindirs_with_mask(pio, SM_ADDR, 7ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
     pio_sm_set_pins_with_mask(   pio, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
+    gpio_init(GPIO_PHI1);
+    gpio_set_pulls(GPIO_PHI1, false, false);  // floating
+
     gpio_init(GPIO_RESET);
     gpio_set_pulls(GPIO_RESET, false, false);  // floating
 
