@@ -103,6 +103,9 @@ void a2pico_init(PIO pio) {
 
     gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
                                                  | GPIO_IRQ_EDGE_RISE, true, a2_reset);
+    if (gpio_get(GPIO_RESET)) {
+        a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
+    }                                                 
 }
 
 void a2pico_resethandler(void(*handler)(bool)) {
