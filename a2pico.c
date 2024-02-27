@@ -47,7 +47,7 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
             handler(true);
         }
     }
-
+    else  // do not come out of reset on spikes
     if (events & GPIO_IRQ_EDGE_RISE) {
         for (uint sm = 0; sm < 3; sm++) {
             pio_sm_init(a2_pio, sm, a2_sm[sm].offset, &a2_sm[sm].config);
