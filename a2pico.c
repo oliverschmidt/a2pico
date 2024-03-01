@@ -41,6 +41,7 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 
     if (events & GPIO_IRQ_EDGE_FALL) {
         pio_set_sm_mask_enabled(a2_pio, 7ul, false);
+        pio_sm_set_pins_with_mask(a2_pio, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
         void(*handler)(bool) = a2_resethandler;
         if (handler) {
