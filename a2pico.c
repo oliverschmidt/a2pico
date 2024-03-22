@@ -66,11 +66,11 @@ void a2pico_init(PIO pio) {
     a2_pio = pio;
 
     pio_gpio_init(pio, GPIO_ENBL);
-    gpio_set_pulls(GPIO_ENBL, false, false);  // floating
+    gpio_disable_pulls(GPIO_ENBL);
 
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
         pio_gpio_init(pio, gpio);
-        gpio_set_pulls(gpio, false, false);  // floating
+        gpio_disable_pulls(gpio);
         gpio_set_input_hysteresis_enabled(gpio, false);
     }
 
@@ -81,10 +81,10 @@ void a2pico_init(PIO pio) {
     pio_sm_set_pins_with_mask(   pio, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
     gpio_init(GPIO_PHI1);
-    gpio_set_pulls(GPIO_PHI1, false, false);  // floating
+    gpio_disable_pulls(GPIO_PHI1);
 
     gpio_init(GPIO_RESET);
-    gpio_set_pulls(GPIO_RESET, false, false);  // floating
+    gpio_disable_pulls(GPIO_RESET);
 
     gpio_init(GPIO_IRQ);
     gpio_put(GPIO_IRQ, false);  // active high
