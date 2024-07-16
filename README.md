@@ -57,7 +57,7 @@ The name _A2Pico_ is now used for both the common hardware and the common softwa
 ### Projects based on A2Pico
 
 * A2retroNET (https://github.com/oliverschmidt/a2retronet)
-* Apple2-IO-RPi (https://github.com/oliverschmidt/apple2-io-rpi)
+* Apple2-IO-RPi (https://github.com/tjboldt/Apple2-IO-RPi)
 * Apple II Pi (https://github.com/oliverschmidt/apple2pi)
 * Appli-Card (https://github.com/oliverschmidt/appli-card)
 * softSP (https://github.com/oliverschmidt/softsp)
