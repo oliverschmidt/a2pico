@@ -13,11 +13,13 @@ it to the Apple II slot bus. In 2022 I published a working Pico firmware on GitH
 at KanasFest 2023 (https://youtu.be/ryiH8t4yIuw).
 
 In the meanwhile [Ralle Palaveev](https://github.com/rallepalaveev) created his own _A2Pico_ hardware for the firmware I had published before. In contrast to the
-hardware I presented on KansasFest, _A2Pico_ consists completely of through-hole components which allow for very easy DIY assembly. However, at that point my Pico
+hardware I presented on KansasFest, _A2Pico_ consisted completely of through-hole components which allow for very easy DIY assembly. However, at that point my Pico
 firmware relied on the behavior of components only available as SMD fine-pitch packages. Therefore _A2Pico_ had some functional limitations.
 
 Considering the next steps after presenting the prototype at KansasFest I decided that my firmware should be accessible to the DIY community so I teamed up with Ralle
-to modify both hardware and firmware to enable full functionlity with through-hole components.
+to modify both hardware and firmware to enable full functionlity with through-hole components only and without any PLDs.
+
+Ralle has now developed an _A2Pico_ variant with SMD components for efficient automated assembly. Both _A2Pico_ variants are 100% functionally identical.
 
 Additionally I wanted to establish a software library that avoids duplication of low level code into the different firmware projects that all share the same hardware.
 The name _A2Pico_ is now used for both the common hardware and the common software.
