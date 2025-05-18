@@ -63,6 +63,7 @@ The name _A2Pico_ is now used for both the common hardware and the common softwa
 * Apple2-IO-RPi (https://github.com/tjboldt/Apple2-IO-RPi)
 * Apple II Pi (https://github.com/oliverschmidt/apple2pi)
 * Appli-Card (https://github.com/oliverschmidt/appli-card)
+* Super Serial Card (https://github.com/oliverschmidt/super-serial-card)
 * Bad Apple !!gs (https://github.com/oliverschmidt/bad-apple-iigs)
 * softSP (https://github.com/oliverschmidt/softsp)
 * A2Pico Demo (https://github.com/oliverschmidt/a2pico/tree/main/demo)
