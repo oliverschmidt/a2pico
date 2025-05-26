@@ -30,7 +30,7 @@ The name _A2Pico_ is now used for both the common hardware and the common softwa
 * SMD [card](https://apple2.co.uk/Products#a2pico-smd-card) and [design](https://github.com/rallepalaveev/a2pico/blob/main/A2Pico.v2.7)
 * SMD [card](https://jcm-1.com/product/a2pico/) for the U.S.
 
-### Theory Of Operation
+### Theory of Operation
 
 /DEVSEL, /IOSEL and /IOSTRB are combined to ENBL via an AND gate. A0-A7 and D0-D7 are multiplexed to the same GPIOs. D0-D7 direction is controlled by GPIO.
 
@@ -55,7 +55,7 @@ The name _A2Pico_ is now used for both the common hardware and the common softwa
 | 27     | TRX1 OE  |
 | 28     | TRX1 DIR |
 
-## A2Pico Software
+## A2Pico Firmware
 
 ### Projects based on A2Pico
 
@@ -68,7 +68,18 @@ The name _A2Pico_ is now used for both the common hardware and the common softwa
 * softSP (https://github.com/oliverschmidt/softsp)
 * A2Pico Demo (https://github.com/oliverschmidt/a2pico/tree/main/demo)
 
-### Theory Of Operation
+### Flashing of a Firmware
+
+Every A2Pico firmware is flashed in the same extremly simple and foolproof way. It doesn't matter wether the A2Pico card is inserted into an Apple II slot or not.
+Just make sure the Apple II turned off if the A2Pico is inserted.
+
+1. Press and hold the `BOOTSEL`button on the A2Pico.
+2. Connect the A2Pico to a PC.
+3. Release the `BOOTSEL`button. A new drive, `RPI-RP2`, will appear.
+4. Copy the firmware `.uf2` file to the `RPI-RP2` drive, e.g., by drag & drop.
+5. Disconnect the A2Pico from the PC. Done.
+
+### Theory of Operation
 
 There are three PIO state machines: __addr__, __read__ and __write__. The ARM core 0 is operated in a traditional way: Running from cached Flash, calling into the
 C library, being interrupted by the USB library, etc. However, The ARM core 1 is dedicated to interact with the three PIO state machines. Therefore it runs from RAM,
