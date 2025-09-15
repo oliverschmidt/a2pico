@@ -27,7 +27,7 @@ The name _A2Pico_ is now used for both the common hardware and the common softwa
 ## A2Pico Hardware
 
 * TH [card](https://apple2.co.uk/Products#a2pico-th-card) and [design](https://github.com/rallepalaveev/a2pico/blob/main/A2Pico.v2.6)
-* SMD [card](https://apple2.co.uk/Products#a2pico-smd-card) and [design](https://github.com/rallepalaveev/a2pico/blob/main/A2Pico.v2.7)
+* SMD [card](https://apple2.co.uk/Products#a2pico-multifunction-card) and [design](https://github.com/rallepalaveev/a2pico/blob/main/A2Pico.v2.7)
 * SMD [card](https://jcm-1.com/product/a2pico/) for the U.S.
 
 ### Theory of Operation
