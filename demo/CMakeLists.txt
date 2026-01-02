@@ -15,9 +15,9 @@ add_subdirectory(.. a2pico)
 
 set_source_files_properties(incbin.S OBJECT_DEPENDS firmware.rom)
 add_custom_command(
-        COMMAND cl65 ${CMAKE_CURRENT_SOURCE_DIR}/firmware.S
-                  -C ${CMAKE_CURRENT_SOURCE_DIR}/firmware.cfg
-                  -o ${CMAKE_CURRENT_BINARY_DIR}/firmware.rom
+        COMMAND cl65 -t apple2 ${CMAKE_CURRENT_SOURCE_DIR}/firmware.S
+                            -C ${CMAKE_CURRENT_SOURCE_DIR}/firmware.cfg
+                            -o ${CMAKE_CURRENT_BINARY_DIR}/firmware.rom
         MAIN_DEPENDENCY firmware.S
         DEPENDS firmware.cfg
         OUTPUT firmware.rom
