@@ -3,8 +3,8 @@
 <img src="/assets/a2pico.svg" alt="Logo" height="140" align="right">
 
 A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/). It consists of two parts:
-* Several [hardware](#Hardware) reference designs
-* A software library for [projects based on A2Pico](#Projects_based_on_A2Pico)
+* Several [hardware](#hardware) reference designs
+* A software library for [projects based on A2Pico](#projects-based-on-a2pico)
 
 ## Hardware
 
