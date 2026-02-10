@@ -76,7 +76,8 @@ idle:
     set pins, 0b01              // enable data bus transceiver
 
     wait 1 gpio GPIO_ENBL [31]  // wait for ENBL to rise
-                                //   [31 cycles to allow read cycle to settle]
+    nop [31]                    // [31+32 cycles to allow read cycle to settle]
+
     set pins, 0b10              // enable address bus transceiver
 
     wait 0 gpio GPIO_ENBL       // wait for ENBL to fall
@@ -116,7 +117,7 @@ static inline void addr_program_set_config(pio_sm_config *c) {
 .wrap_target
 
     wait 1 irq IRQ_WRITE [31]   // wait for 'write' IRQ to be set and clear it
-                                //   [31 cycles to allow 6502 to set up D0-D7]
+    nop [31]                    // [31+32 cycles to allow 6502 to set up D0-D7]
 
     in pins, SIZE_DATA          // shift D0-D7 into ISR
 
