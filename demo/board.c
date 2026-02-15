@@ -44,36 +44,36 @@ static void __time_critical_func(handler)(bool asserted) {
 
 void __time_critical_func(board)(void) {
 
-    a2pico_init(pio0);
+    a2pico_init();
 
     a2pico_resethandler(&handler);
 
     while (true) {
-        uint32_t pico = a2pico_getaddr(pio0);
+        uint32_t pico = a2pico_getaddr();
         uint32_t addr = pico & 0x0FFF;
         uint32_t io   = pico & 0x0F00;  // IOSTRB or IOSEL
         uint32_t strb = pico & 0x0800;  // IOSTRB
-        uint32_t read = pico & 0x1000;  // R/W
+        uint32_t read = pico & RW_BIT;  // R/W
 
         if (read) {
             if (!io) {  // DEVSEL
                 switch (addr & 0xF) {
                     case 0x0:
-                        a2pico_putdata(pio0, sio_hw->fifo_rd);
+                        a2pico_putdata(sio_hw->fifo_rd);
                         break;
                     case 0x1:
                         // SIO_FIFO_ST_VLD_BITS _u(0x00000001)
                         // SIO_FIFO_ST_RDY_BITS _u(0x00000002)
-                        a2pico_putdata(pio0, sio_hw->fifo_st << 6);
+                        a2pico_putdata(sio_hw->fifo_st << 6);
                         break;
                 }
             } else {
                 if (!strb || (active && (addr != 0x0FFF))) {
-                    a2pico_putdata(pio0, firmware[addr]);
+                    a2pico_putdata(firmware[addr]);
                 }
             }
         } else {
-            uint32_t data = a2pico_getdata(pio0);
+            uint32_t data = a2pico_getdata();
             if (!io) {  // DEVSEL
                 switch (addr & 0xF) {
                     case 0x0:

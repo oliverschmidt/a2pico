@@ -28,8 +28,6 @@ SOFTWARE.
 
 #include "a2pico.h"
 
-static PIO a2_pio;
-
 static struct {
     uint          offset;
     pio_sm_config config;
@@ -40,8 +38,8 @@ static void(*a2_resethandler)(bool);
 static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 
     if (events & GPIO_IRQ_EDGE_FALL) {
-        pio_set_sm_mask_enabled(a2_pio, 7ul, false);
-        pio_sm_set_pins_with_mask(a2_pio, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+        pio_set_sm_mask_enabled(pio0, 7ul, false);
+        pio_sm_set_pins_with_mask(pio0, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
         void(*handler)(bool) = a2_resethandler;
         if (handler) {
@@ -51,9 +49,9 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
     else  // do not come out of reset on spikes
     if (events & GPIO_IRQ_EDGE_RISE) {
         for (uint sm = 0; sm < 3; sm++) {
-            pio_sm_init(a2_pio, sm, a2_sm[sm].offset, &a2_sm[sm].config);
+            pio_sm_init(pio0, sm, a2_sm[sm].offset, &a2_sm[sm].config);
         }
-        pio_set_sm_mask_enabled(a2_pio, 7ul, true);
+        pio_set_sm_mask_enabled(pio0, 7ul, true);
 
         void(*handler)(bool) = a2_resethandler;
         if (handler) {
@@ -62,23 +60,21 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
     }
 }
 
-void a2pico_init(PIO pio) {
-    a2_pio = pio;
-
-    pio_gpio_init(pio, GPIO_ENBL);
+void a2pico_init(void) {
+    pio_gpio_init(pio0, GPIO_ENBL);
     gpio_disable_pulls(GPIO_ENBL);
 
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
-        pio_gpio_init(pio, gpio);
+        pio_gpio_init(pio0, gpio);
         gpio_disable_pulls(gpio);
         gpio_set_input_hysteresis_enabled(gpio, false);
     }
 
-    pio_gpio_init(pio, GPIO_ADDR_OE);
-    pio_gpio_init(pio, GPIO_DATA_OE);
-    pio_gpio_init(pio, GPIO_DATA_DIR);
-    pio_sm_set_pindirs_with_mask(pio, SM_ADDR, 7ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
-    pio_sm_set_pins_with_mask(   pio, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+    pio_gpio_init(pio0, GPIO_ADDR_OE);
+    pio_gpio_init(pio0, GPIO_DATA_OE);
+    pio_gpio_init(pio0, GPIO_DATA_DIR);
+    pio_sm_set_pindirs_with_mask(pio0, SM_ADDR, 7ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+    pio_sm_set_pins_with_mask(   pio0, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
     gpio_init(GPIO_PHI1);
     gpio_disable_pulls(GPIO_PHI1);
@@ -90,15 +86,15 @@ void a2pico_init(PIO pio) {
     gpio_put(GPIO_IRQ, false);  // active high
     gpio_set_dir(GPIO_IRQ, GPIO_OUT);
 
-    a2_sm[SM_ADDR].offset = pio_add_program(pio, &addr_program);
+    a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
     a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
     addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-    a2_sm[SM_READ].offset = pio_add_program(pio, &read_program);
+    a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
     a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
     read_program_set_config(&a2_sm[SM_READ].config);
 
-    a2_sm[SM_WRITE].offset = pio_add_program(pio, &write_program);
+    a2_sm[SM_WRITE].offset = pio_add_program(pio0, &write_program);
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 

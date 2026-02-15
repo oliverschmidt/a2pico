@@ -29,40 +29,40 @@ SOFTWARE.
 
 #include <hardware/pio.h>
 
+#define RW_BIT 0x1000
+
 #define SM_ADDR  0
 #define SM_READ  1
 #define SM_WRITE 2
 
-#define GPIO_PHI1  16
-#define GPIO_RESET 17
-#define GPIO_IRQ   18
+#define GPIO_IRQ 18
 
 #define GPIO_SPI0_TX  19
 #define GPIO_SPI0_RX  20
 #define GPIO_SPI0_CSN 21
 #define GPIO_SPI0_SCK 22
 
-void a2pico_init(PIO pio);
+void a2pico_init(void);
 
 void a2pico_resethandler(void(*handler)(bool asserted));
 
-static __always_inline uint32_t a2pico_getaddr(PIO pio) {
-    while (pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
+static __always_inline uint32_t a2pico_getaddr(void) {
+    while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
         tight_loop_contents();
     }
-    return pio->rxf[SM_ADDR];
+    return pio0->rxf[SM_ADDR];
 }
 
-static __always_inline uint32_t a2pico_getdata(PIO pio) {
+static __always_inline uint32_t a2pico_getdata(void) {
     uint retry = 32;
-    while (pio->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE)) && --retry) {
+    while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE)) && --retry) {
         tight_loop_contents();
     }
-    return pio->rxf[SM_WRITE];
+    return pio0->rxf[SM_WRITE];
 }
 
-static __always_inline void a2pico_putdata(PIO pio, uint32_t data) {
-    pio->txf[SM_READ] = data;
+static __always_inline void a2pico_putdata(uint32_t data) {
+    pio0->txf[SM_READ] = data;
 }
 
 static __always_inline void a2pico_irq(bool assert) {
