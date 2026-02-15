@@ -46,7 +46,9 @@ SOFTWARE.
 .define public  SM_ADDR          0
 .define public  SM_READ          1  // from Apple II perspective
 .define public  SM_WRITE         2  // from Apple II perspective
+.define public  SM_SYNC          3
 
+.define         IRQ_SYNC         0
 .define         IRQ_WRITE        4
 
 /*
@@ -176,5 +178,26 @@ static inline void read_program_set_config(pio_sm_config *c) {
     sm_config_set_sideset_pins(c, GPIO_DATA_DIR);
 }
 %}
+
+///////////////////////////////////////////////////////////////////////////////
+
+.program sync
+
+    pull block                  // pull data into OSR, block on empty FIFO
+
+.wrap_target
+
+    mov x, osr                  // move OSR to X
+
+loop:
+    wait 0 gpio GPIO_PHI1       // wait for PHI1 to fall
+
+    wait 1 gpio GPIO_PHI1       // wait for PHI1 to rise
+
+    jmp x-- loop                // jump to 'loop' if X != 0, prior to decrement
+
+    irq IRQ_SYNC                // set 'sync' IRQ
+
+.wrap
 
 ///////////////////////////////////////////////////////////////////////////////

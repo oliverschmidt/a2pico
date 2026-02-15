@@ -46,6 +46,8 @@ void a2pico_init(void);
 
 void a2pico_resethandler(void(*handler)(bool asserted));
 
+void a2pico_synchandler(void(*handler)(void), uint32_t counter);
+
 static __always_inline uint32_t a2pico_getaddr(void) {
     while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
         tight_loop_contents();
