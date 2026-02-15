@@ -40,10 +40,8 @@ void main(void) {
 
     set_sys_clock_khz(200000, false);
 
-#ifdef PICO_DEFAULT_LED_PIN
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-#endif
 
     stdio_init_all();
 
@@ -76,8 +74,6 @@ void main(void) {
             printf(" RESET ");
         }
 
-#ifdef PICO_DEFAULT_LED_PIN
         gpio_put(PICO_DEFAULT_LED_PIN, active);
-#endif
     }
 }
