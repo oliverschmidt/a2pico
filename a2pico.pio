@@ -190,9 +190,11 @@ static inline void read_program_set_config(pio_sm_config *c) {
     mov x, osr                  // move OSR to X
 
 loop:
-    wait 0 gpio GPIO_PHI1       // wait for PHI1 to fall
+    wait 0 gpio GPIO_PHI1 [31]  // wait for PHI1 to fall
+    nop [31]
 
-    wait 1 gpio GPIO_PHI1       // wait for PHI1 to rise
+    wait 1 gpio GPIO_PHI1 [31]  // wait for PHI1 to rise
+    nop [31]
 
     jmp x-- loop                // jump to 'loop' if X != 0, prior to decrement
 
