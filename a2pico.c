@@ -110,13 +110,16 @@ void a2pico_resethandler(void(*handler)(bool)) {
 }
 
 void a2pico_synchandler(void(*handler)(void), uint32_t counter) {
-    static uint          offset = -1;
+    static int           offset = -1;
     static pio_sm_config config;
 
-    irq_set_enabled(PIO0_IRQ_0, false);
     pio_sm_set_enabled(pio0, SM_SYNC, false);
+    irq_set_enabled(PIO0_IRQ_0, false);
 
-    irq_set_exclusive_handler(PIO0_IRQ_0, handler);
+    irq_handler_t old_handler = irq_get_exclusive_handler(PIO0_IRQ_0);
+    if (old_handler != NULL) {
+        irq_remove_handler(PIO0_IRQ_0, old_handler);
+    }
     
     if (offset < 0) {
         offset = pio_add_program(pio0, &sync_program);
@@ -128,7 +131,8 @@ void a2pico_synchandler(void(*handler)(void), uint32_t counter) {
         pio_sm_init(pio0, SM_SYNC, offset, &config);
         pio_sm_put(pio0, SM_SYNC, counter);
 
-        pio_sm_set_enabled(pio0, SM_SYNC, true);
+        irq_set_exclusive_handler(PIO0_IRQ_0, handler);
         irq_set_enabled(PIO0_IRQ_0, true);
+        pio_sm_set_enabled(pio0, SM_SYNC, true);
     }
 }
