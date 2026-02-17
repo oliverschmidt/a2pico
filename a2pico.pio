@@ -191,10 +191,10 @@ static inline void read_program_set_config(pio_sm_config *c) {
 
 loop:
     wait 0 gpio GPIO_PHI1 [31]  // wait for PHI1 to fall
-    nop [31]
+    nop [31]                    // [31+32 cycles to avoid false transitions]
 
     wait 1 gpio GPIO_PHI1 [31]  // wait for PHI1 to rise
-    nop [31]
+    nop [31]                    // [31+32 cycles to avoid false transitions]
 
     jmp x-- loop                // jump to 'loop' if X != 0, prior to decrement
 
