@@ -39,7 +39,7 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 
     if (events & GPIO_IRQ_EDGE_FALL) {
         pio_set_sm_mask_enabled(pio0, 7ul, false);
-        pio_sm_set_pins_with_mask(pio0, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+        pio_sm_set_pins_with_mask(pio0, 0, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
         void(*handler)(bool) = a2_resethandler;
         if (handler) {
@@ -76,8 +76,8 @@ void a2pico_init(void) {
     pio_gpio_init(pio0, GPIO_ADDR_OE);
     pio_gpio_init(pio0, GPIO_DATA_OE);
     pio_gpio_init(pio0, GPIO_DATA_DIR);
-    pio_sm_set_pindirs_with_mask(pio0, SM_ADDR, 7ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
-    pio_sm_set_pins_with_mask(   pio0, SM_ADDR, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+    pio_sm_set_pindirs_with_mask(pio0, 0, 7ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+    pio_sm_set_pins_with_mask(   pio0, 0, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
 
     gpio_init(GPIO_RESET);
     gpio_disable_pulls(GPIO_RESET);
