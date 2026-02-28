@@ -29,18 +29,24 @@ SOFTWARE.
 
 #include <hardware/pio.h>
 
-#define RW_BIT 0x1000
+#define RW_BIT  0x1000
 
-#define SM_ADDR  0
-#define SM_READ  1
-#define SM_WRITE 2
+#define PIO_ADDR    pio0
+#define PIO_READ    pio0
+#define PIO_WRITE   pio0
 
-#define GPIO_IRQ 18
+#define SM_ADDR     0
+#define SM_READ     1
+#define SM_WRITE    2
 
-#define GPIO_SPI0_TX  19
-#define GPIO_SPI0_RX  20
-#define GPIO_SPI0_CSN 21
-#define GPIO_SPI0_SCK 22
+#define GPIO_IRQ    18
+
+#define GPIO_SPI0_TX    19
+#define GPIO_SPI0_RX    20
+#define GPIO_SPI0_CSN   21
+#define GPIO_SPI0_SCK   22
+
+#define IRQ_INV     // active high
 
 void a2pico_init(void);
 
@@ -49,26 +55,26 @@ void a2pico_resethandler(void(*handler)(bool asserted));
 void a2pico_synchandler(void(*handler)(void), uint32_t counter);
 
 static __always_inline uint32_t a2pico_getaddr(void) {
-    while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
+    while (PIO_ADDR->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
         tight_loop_contents();
     }
-    return pio0->rxf[SM_ADDR];
+    return PIO_ADDR->rxf[SM_ADDR];
 }
 
 static __always_inline uint32_t a2pico_getdata(void) {
     uint retry = 32;
-    while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE)) && --retry) {
+    while (PIO_WRITE->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE)) && --retry) {
         tight_loop_contents();
     }
-    return pio0->rxf[SM_WRITE];
+    return PIO_WRITE->rxf[SM_WRITE];
 }
 
 static __always_inline void a2pico_putdata(uint32_t data) {
-    pio0->txf[SM_READ] = data;
+    PIO_READ->txf[SM_READ] = data;
 }
 
 static __always_inline void a2pico_irq(bool assert) {
-    gpio_put(GPIO_IRQ, assert);  // active high
+    gpio_put(GPIO_IRQ, IRQ_INV assert);
 }
 
 #endif
