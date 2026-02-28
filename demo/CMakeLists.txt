@@ -1,4 +1,4 @@
-set(PROJECT_NAME demo)
+set(PROJECT_NAME Demo)
 
 cmake_minimum_required(VERSION 3.13...3.27)
 include(pico_sdk_import.cmake)

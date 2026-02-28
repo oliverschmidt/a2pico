@@ -7,7 +7,7 @@ The program comes with some 6502 firmware, which makes use of the three emulated
 
 ## Usage
 
-1. Flash the [demo.uf2](https://github.com/oliverschmidt/a2pico/releases/latest/download/demo.uf2) file to the Pico as usual, but don't remove the USB cable
+1. Flash the [Demo.uf2](https://github.com/oliverschmidt/a2pico/releases/latest/download/Demo.uf2) file to the Pico as usual, but don't remove the USB cable
 from the Pico.
 
 2. Turn off the Apple II.
