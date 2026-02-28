@@ -25,13 +25,13 @@ add_custom_command(
         )
 
 target_sources(${PROJECT_NAME} PRIVATE
-        main.c
         board.c
         incbin.S
+        main.c
         )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        pico_stdlib
-        pico_multicore
         a2pico
+        pico_multicore
+        pico_stdlib
         )
