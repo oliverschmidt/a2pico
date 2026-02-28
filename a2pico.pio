@@ -43,11 +43,6 @@ SOFTWARE.
 .define public  SIZE_ADDR       13  // incl. R/W
 .define public  SIZE_DATA        8
 
-.define public  SM_ADDR          0
-.define public  SM_READ          1  // from Apple II perspective
-.define public  SM_WRITE         2  // from Apple II perspective
-.define public  SM_SYNC          3
-
 .define         IRQ_SYNC         0
 .define         IRQ_WRITE        4
 
@@ -57,10 +52,10 @@ Implementation of the Apple II peripheral bus protocol:
 
 - /DEVSEL, /IOSEL and /IOSTRB are supposed to combined to ENBL via an AND gate.
 
-- On the falling edge of ENBL, the lines A0-A11 and R/W are sampled and pushed
-  into the 'enable' state machine RX FIFO.
+- On the falling edge of ENBL, the lines A0-A11 and R/W are latched and pushed
+  into the 'addr' state machine RX FIFO.
 
-- In case of an Apple II write cycle, the lines D0-D7 are sampled ~300ns later
+- In case of an Apple II write cycle, the lines D0-D7 are latched ~300ns later
   and pushed into the 'write' state machine RX FIFO.
 
 - If a byte is pushed into the 'read' state machine TX FIFO, it is driven out

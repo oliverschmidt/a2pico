@@ -28,6 +28,8 @@ SOFTWARE.
 
 #include "a2pico.h"
 
+#define SM_SYNC 3
+
 static struct {
     uint          offset;
     pio_sm_config config;
