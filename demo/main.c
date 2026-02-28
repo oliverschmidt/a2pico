@@ -34,6 +34,12 @@ SOFTWARE.
 
 #include "board.h"
 
+static volatile bool sync;
+
+static void synchandler(void) {
+    sync = true;
+}
+
 void main(void) {
     busctrl_hw->priority = BUSCTRL_BUS_PRIORITY_PROC1_BITS;
     multicore_launch_core1(board);
@@ -49,6 +55,8 @@ void main(void) {
     }
 
     printf("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
+
+    a2pico_synchandler(synchandler, 5000000);
 
     while (true) {
         if (stdio_usb_connected()) {
@@ -72,6 +80,11 @@ void main(void) {
         if (reset) {
             reset = false;
             printf(" RESET ");
+        }
+
+        if (sync) {
+            sync = false;
+            printf(" SYNC ");
         }
 
         gpio_put(PICO_DEFAULT_LED_PIN, active);

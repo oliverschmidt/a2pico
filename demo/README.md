@@ -22,22 +22,24 @@ The program creates an ACM CDC serial port on the USB host. It deliberately stop
  
 After the terminal has asserted DTR (which most of them do implicitly), the program continues to start up and sends a banner to the terminal.
 
-6. Get into the Apple II Monitor and enter `Cn00` (with n being the slot the Pico is connected to). Now the Pico LED comes on. Enter `CFFF` and the LED comes off.
+6. Every 5 seconds, the string ` SYNC ` is displayed on the terminal.
 
-7. Enter `Cn00L` to see the firmware code of the ROM emulated by the Pico.
+7. Get into the Apple II Monitor and enter `Cn00` (with n being the slot the Pico is connected to). Now the Pico LED comes on. Enter `CFFF` and the LED comes off.
 
-8. Enter `Cn00G` to run the firmware. A banner is displayed on the Apple II display.
+8. Enter `Cn00L` to see the firmware code of the ROM emulated by the Pico.
+
+9. Enter `Cn00G` to run the firmware. A banner is displayed on the Apple II display.
  
-9. Enter chars on the Apple II and the terminal. They are displayed on the counterside.
+10. Enter chars on the Apple II and the terminal. They are displayed on the counterside.
 
-10. Press `ESC` on the Apple II to quit to the monitor. After eight further chars entered on the terminal, the program sends a BELL to the terminal.
+11. Press `ESC` on the Apple II to quit to the monitor. After eight further chars entered on the terminal, the program sends a BELL to the terminal.
 
-11. Enter `Cn00G` again and the eight chars are displayed.
+12. Enter `Cn00G` again and the eight chars are displayed.
 
-12. Quit the terminal emulator (or de-assert DTR, if possible). After eight further chars entered on the Apple II, the Apple II firmware makes the speaker beep.
+13. Quit the terminal emulator (or de-assert DTR, if possible). After eight further chars entered on the Apple II, the Apple II firmware makes the speaker beep.
 
-13. Connect the terminal emulator again (or assert DTR again) and the eight chars are sent to it.
+14. Connect the terminal emulator again (or assert DTR again) and the eight chars are sent to it.
 
-14. Press `ESC` on the terminal. An interrupt handler on the Apple II inverts the character in the lower right corner of the screen.
+15. Press `ESC` on the terminal. An interrupt handler on the Apple II inverts the character in the lower right corner of the screen.
 
-15. Press `Ctrl-Reset` on the Apple II. The string ` RESET ` is displayed on the terminal.
+16. Press `Ctrl-Reset` on the Apple II. The string ` RESET ` is displayed on the terminal.
