@@ -35,8 +35,9 @@ static struct {
 
 static void(*a2_resethandler)(bool);
 
-static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
+static void(*a2_synchandler)(void);
 
+static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
     if (events & GPIO_IRQ_EDGE_FALL) {
         pio_set_sm_mask_enabled(pio0, 7ul, false);
         pio_sm_set_pins_with_mask(pio0, 0, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
@@ -109,29 +110,32 @@ void a2pico_resethandler(void(*handler)(bool)) {
     a2_resethandler = handler;
 }
 
+static void a2_sync(void) {
+    a2_synchandler();
+    pio_interrupt_clear(pio0, 0);
+}
+
 void a2pico_synchandler(void(*handler)(void), uint32_t counter) {
     static int           offset = -1;
     static pio_sm_config config;
 
-    pio_sm_set_enabled(pio0, SM_SYNC, false);
-    irq_set_enabled(PIO0_IRQ_0, false);
-
-    irq_handler_t old_handler = irq_get_exclusive_handler(PIO0_IRQ_0);
-    if (old_handler != NULL) {
-        irq_remove_handler(PIO0_IRQ_0, old_handler);
-    }
-    
     if (offset < 0) {
         offset = pio_add_program(pio0, &sync_program);
         config = sync_program_get_default_config(offset);
         pio_set_irq0_source_enabled(pio0, pis_interrupt0, true);
+        irq_set_exclusive_handler(PIO0_IRQ_0, a2_sync);
     }
 
-    if (handler != NULL) { 
+    pio_sm_set_enabled(pio0, SM_SYNC, false);
+    irq_set_enabled(PIO0_IRQ_0, false);
+    pio_interrupt_clear(pio0, 0);
+
+    a2_synchandler = handler;
+
+    if (handler != NULL) {
         pio_sm_init(pio0, SM_SYNC, offset, &config);
         pio_sm_put(pio0, SM_SYNC, counter);
 
-        irq_set_exclusive_handler(PIO0_IRQ_0, handler);
         irq_set_enabled(PIO0_IRQ_0, true);
         pio_sm_set_enabled(pio0, SM_SYNC, true);
     }
