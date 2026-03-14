@@ -17,13 +17,14 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 ### Projects based on A2Pico
 
 * A2retroNET (https://github.com/oliverschmidt/a2retronet)
+* Mouse Interface (https://github.com/oliverschmidt/mouse-interface)
+* softSP (https://github.com/oliverschmidt/softsp)
+* Appli-Card (https://github.com/oliverschmidt/appli-card)
+* Super Serial Card (https://github.com/oliverschmidt/super-serial-card)
 * Apple2-IO-RPi (https://github.com/tjboldt/Apple2-IO-RPi)
 * Apple II Pi (https://github.com/oliverschmidt/apple2pi)
-* Appli-Card (https://github.com/oliverschmidt/appli-card)
-* Mouse Interface (https://github.com/oliverschmidt/mouse-interface)
-* Super Serial Card (https://github.com/oliverschmidt/super-serial-card)
+* Brutal Timer (https://github.com/oliverschmidt/brutal-timer)
 * Bad Apple !!gs (https://github.com/oliverschmidt/bad-apple-iigs)
-* softSP (https://github.com/oliverschmidt/softsp)
 * A2Pico Demo (https://github.com/oliverschmidt/a2pico/tree/main/demo)
 
 ### Flashing of a Firmware
