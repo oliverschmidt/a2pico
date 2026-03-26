@@ -31,8 +31,8 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 Every A2Pico firmware is flashed in the same extremly simple and foolproof way.
 
-* A2Pico: It doesn't matter wether the card is inserted into an Apple II slot or not. Just make sure the Apple II turned off if the card is inserted.
-* A2Pico2Lite: Make sure the card is not inserted into an Apple II slot.
+* _A2Pico_: It doesn't matter wether the card is inserted into an Apple II slot or not. Just make sure the Apple II turned off if the card is inserted.
+* _A2Pico2Lite_: Make sure the card is not inserted into an Apple II slot.
 
 1. Press and hold the `BOOTSEL`button on the card.
 2. Connect the card to a PC.
@@ -58,7 +58,7 @@ Additionally I wanted to establish a software library that avoids duplication of
 
 The introduction of the Raspberry Pi Pico 2 in 2024 brought true 5V tolerance, thus eliminating the need for the _A2Pico's_ transceivers. However, the _A2Pico_ also uses these transceivers to multiplex address and data lines onto the same GPIOs.  
 
-To take advantage of the 5V tolerance and truly eliminate the transceivers, the multiplexing of address and data lines also had to be removed. Without this multiplexing, however, there is a critical shortage of GPIOs. Therefore, the _A2Pico2Lite_ does __not__ have an SD card slot. Hence the _Lite_ in its name.
+To take advantage of the 5V tolerance and truly eliminate the transceivers, the multiplexing of address and data lines also had to be removed. Without this multiplexing, however, there is a critical shortage of GPIOs. Therefore, the _A2Pico2Lite_ does __not__ have a Micro SD Card slot. Hence the _Lite_ in its name.
 
 In addition to the transceivers, the _A2Pico2Lite_ also eliminates the _A2Pico's_ AND gate. Therefore, it requires no ICs at all (apart from those on the Pico 2 module). This allows for the simplest possible DIY TH variant.
 
