@@ -29,6 +29,24 @@ SOFTWARE.
 
 #include <hardware/pio.h>
 
+#ifdef RASPBERRYPI_PICO2
+
+#define RW_BIT  0x100000
+
+#define PIO_ADDR    pio0
+#define PIO_READ    pio1
+#define PIO_WRITE   pio1
+
+#define SM_ADDR     3
+#define SM_READ     0
+#define SM_WRITE    1
+
+#define GPIO_IRQ    0
+
+#define IRQ_INV !   // active low
+
+#else
+
 #define RW_BIT  0x1000
 
 #define PIO_ADDR    pio0
@@ -47,6 +65,8 @@ SOFTWARE.
 #define GPIO_SPI0_SCK   22
 
 #define IRQ_INV     // active high
+
+#endif
 
 void a2pico_init(void);
 
