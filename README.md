@@ -91,9 +91,9 @@ In addition to the transceivers, the _A2Pico2Lite_ also eliminates the _A2Pico's
 
 There are four PIO state machines: __addr__, __read__, __write__ and __sync__. The ARM core 0 is operated in a traditional way: Running from cached Flash, calling into the C library, being interrupted by the USB library, etc. However, The ARM core 1 is dedicated to interact with the __addr__, __read__ and __write__ PIO state machines. Therefore it runs from RAM, calls only inline functions and is never interrupted.
 
-On the falling edge of ENBL, the __addr__ state machine samples lines A0-A11 plus R/W and pushes the data into its RX FIFO. In case of a 6502 write cycle, it additionally triggers the __write__ state machine. The ARM core 1 waits on that FIFO, decodes the address parts and branches based on R/W.
+On the falling edge of ENBL, the __addr__ state machine latches lines A0-A11 plus R/W and pushes the data into its RX FIFO. In case of a 6502 write cycle, it additionally triggers the __write__ state machine. The ARM core 1 waits on that FIFO, decodes the address parts and branches based on R/W.
 
-In case of a 6502 write cycle, the __write__ state machine samples lines D0-D7 ~300ns later and pushes the byte into its RX FIFO. By then, the ARM core 1 waits on that FIFO and processes the byte.
+In case of a 6502 write cycle, the __write__ state machine latches lines D0-D7 ~300ns later and pushes the byte into its RX FIFO. By then, the ARM core 1 waits on that FIFO and processes the byte.
 
 In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte in time for the 6502 to pick it up. As soon as it has done so, it pushes the byte into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO and drives out the byte to the lines D0-D7 until the rising edge of ENBL.
 
@@ -114,8 +114,8 @@ In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte i
 
 There are seven PIO state machines: __devsel__, __iosel__, __iostrb__, __addr__, __read__, __write__ and __sync__. The ARM core 0 is operated in a traditional way: Running from cached Flash, calling into the C library, being interrupted by the USB library, etc. However, The ARM core 1 is dedicated to interact with the __addr__, __read__ and __write__ PIO state machines. Therefore it runs from RAM, calls only inline functions and is never interrupted.
 
-On the falling edge of /DEVSEL, /IOSEL or /IOSTRB, the __devsel__, __iosel__ or __iostrb__ state machine triggers the __addr__ state machine. The __addr__ state machine samples lines A0-A11, D0-D7 plus R/W and pushes the data into its RX FIFO. In case of a 6502 write cycle, it additionally triggers the __write__ state machine. The ARM core 1 waits on that FIFO, decodes the address parts and branches based on R/W.
+On the falling edge of /DEVSEL, /IOSEL or /IOSTRB, the __devsel__, __iosel__ or __iostrb__ state machine triggers the __addr__ state machine. The __addr__ state machine latches lines A0-A11, D0-D7 plus R/W and pushes the data into its RX FIFO. In case of a 6502 write cycle, it additionally triggers the __write__ state machine. The ARM core 1 waits on that FIFO, decodes the address parts and branches based on R/W.
 
-In case of a 6502 write cycle, the __write__ state machine samples lines D0-D7 ~300ns later again and pushes the byte into its RX FIFO. By then, the ARM core 1 waits on that FIFO and processes the byte.
+In case of a 6502 write cycle, the __write__ state machine latches lines D0-D7 ~300ns later again and pushes the byte into its RX FIFO. By then, the ARM core 1 waits on that FIFO and processes the byte.
 
 In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte in time for the 6502 to pick it up. As soon as it has done so, it pushes the byte into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO and drives out the byte to the lines D0-D7 until /DEVSEL, /IOSEL and /IOSTRB are all high.
