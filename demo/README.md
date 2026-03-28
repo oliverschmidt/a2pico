@@ -1,22 +1,20 @@
 # Demo
 
-The program emulates both a slot ROM ($Cn00-$CnFF) as well a an expansion ROM ($C800-$CFFE). Additionally it emulates a simple UART-style interface ($C0n0)
-with two status bits for ready-to-send and ready-to-receive ($C0n1). And finally it makes use of the IRQ and RESET signals.
+The program emulates both a slot ROM ($Cn00-$CnFF) as well a an expansion ROM ($C800-$CFFE). Additionally it emulates a simple UART-style interface ($C0n0) with two status bits for ready-to-send and ready-to-receive ($C0n1). And finally it makes use of the IRQ, PHI and RESET signals.
 
 The program comes with some 6502 firmware, which makes use of the three emulated items to interact with a terminal emulator connected via the Pico USB port.
 
 ## Usage
 
-1. Flash the [Demo.uf2](https://github.com/oliverschmidt/a2pico/releases/latest/download/Demo.uf2) file to the Pico as usual, but don't remove the USB cable
-from the Pico.
+1. Flash the correct [.uf2 file](https://github.com/oliverschmidt/a2pico/releases/latest/) to the card as usual, but don't remove the USB cable from the card.
 
 2. Turn off the Apple II.
 
-3. Connect the Pico to the Apple II and connected the USB cable to your USB host.
+3. Connect the card to the Apple II and connected the USB cable to your USB host.
 
 4. Turn on the Apple II.
 
-The program creates an ACM CDC serial port on the USB host. It deliberately stops there and waits for a program to connect to the serial port on the USB host.
+The program creates a CDC-ACM serial port on the USB host. It deliberately stops there and waits for a program to connect to the serial port on the USB host.
 
 5. Connect a terminal emulator (e.g. [PuTTY](https://www.putty.org/)) to the serial port @ 115200 bits/s.
  
@@ -42,4 +40,4 @@ After the terminal has asserted DTR (which most of them do implicitly), the prog
 
 15. Press `ESC` on the terminal. An interrupt handler on the Apple II inverts the character in the lower right corner of the screen.
 
-16. Press `Ctrl-Reset` on the Apple II. The string ` RESET ` is displayed on the terminal.
+16. A2Pico only: Press `Ctrl-Reset` on the Apple II. The string ` RESET ` is displayed on the terminal.
