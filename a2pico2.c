@@ -121,7 +121,7 @@ void a2pico_synchandler(void(*handler)(void), uint32_t counter) {
 
     if (handler != NULL) { 
         pio_sm_init(pio1, SM_SYNC, offset, &config);
-        pio_sm_put(pio1, SM_SYNC, counter);
+        pio_sm_put(pio1, SM_SYNC, counter - 1);
 
         irq_set_enabled(PIO1_IRQ_0, true);
         pio_sm_set_enabled(pio1, SM_SYNC, true);
