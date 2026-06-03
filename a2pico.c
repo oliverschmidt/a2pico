@@ -86,8 +86,7 @@ void a2pico_init(void) {
     gpio_disable_pulls(GPIO_RESET);
 
     gpio_init(GPIO_IRQ);
-    gpio_put(GPIO_IRQ, false);  // active high
-    gpio_set_dir(GPIO_IRQ, GPIO_OUT);
+    gpio_put(GPIO_IRQ, true);  // active high
 
     a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
     a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);

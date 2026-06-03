@@ -57,8 +57,7 @@ void a2pico_init(void) {
 
     gpio_init(GPIO_IRQ);
     gpio_disable_pulls(GPIO_IRQ);
-    gpio_put(GPIO_IRQ, true);  // active low
-    gpio_set_dir(GPIO_IRQ, GPIO_OUT);
+    gpio_put(GPIO_IRQ, false);  // active low
 
     uint          offset;
     pio_sm_config config;

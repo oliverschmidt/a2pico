@@ -43,8 +43,6 @@ SOFTWARE.
 
 #define GPIO_IRQ    0
 
-#define IRQ_INV !   // active low
-
 #else
 
 #define RW_BIT  0x1000
@@ -63,8 +61,6 @@ SOFTWARE.
 #define GPIO_SPI0_RX    20
 #define GPIO_SPI0_CSN   21
 #define GPIO_SPI0_SCK   22
-
-#define IRQ_INV     // active high
 
 #endif
 
@@ -94,7 +90,7 @@ static __always_inline void a2pico_putdata(uint32_t data) {
 }
 
 static __always_inline void a2pico_irq(bool assert) {
-    gpio_put(GPIO_IRQ, IRQ_INV assert);
+    gpio_set_dir(GPIO_IRQ, assert ? GPIO_OUT : GPIO_IN);
 }
 
 #endif
