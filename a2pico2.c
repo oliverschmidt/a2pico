@@ -42,7 +42,6 @@ void a2pico_init(void) {
     for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
         pio_gpio_init(pio0, gpio);
         gpio_disable_pulls(gpio);
-        gpio_set_input_hysteresis_enabled(gpio, true);
     }
 
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
