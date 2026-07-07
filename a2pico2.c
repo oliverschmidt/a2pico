@@ -61,6 +61,8 @@ void a2pico_init(void) {
     uint          offset;
     pio_sm_config config;
 
+    pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
+
     offset = pio_add_program(pio0, &addr_program);
     config = addr_program_get_default_config(offset);
     addr_program_set_config(&config);
@@ -77,6 +79,8 @@ void a2pico_init(void) {
     pio_sm_init(pio0, SM_WRITE, offset, &config);
 
     pio_set_sm_mask_enabled(pio0, 0b0111, true);
+
+    pio_claim_sm_mask(pio1, 0b0111);
 
     offset = pio_add_program(pio1, &devsel_program);
     config = devsel_program_get_default_config(offset);
