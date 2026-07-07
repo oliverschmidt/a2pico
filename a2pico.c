@@ -41,8 +41,8 @@ static void(*a2_synchandler)(void);
 
 static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
     if (events & GPIO_IRQ_EDGE_FALL) {
-        pio_set_sm_mask_enabled(pio0, 7ul, false);
-        pio_sm_set_pins_with_mask(pio0, 0, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+        pio_set_sm_mask_enabled(pio0, 0b0111, false);
+        pio_sm_set_pins_with_mask(pio0, 0, 0b011 << GPIO_ADDR_OE, 0b111 << GPIO_ADDR_OE);
 
         void(*handler)(bool) = a2_resethandler;
         if (handler) {
@@ -54,7 +54,7 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
         for (uint sm = 0; sm < 3; sm++) {
             pio_sm_init(pio0, sm, a2_sm[sm].offset, &a2_sm[sm].config);
         }
-        pio_set_sm_mask_enabled(pio0, 7ul, true);
+        pio_set_sm_mask_enabled(pio0, 0b0111, true);
 
         void(*handler)(bool) = a2_resethandler;
         if (handler) {
@@ -79,8 +79,8 @@ void a2pico_init(void) {
     pio_gpio_init(pio0, GPIO_ADDR_OE);
     pio_gpio_init(pio0, GPIO_DATA_OE);
     pio_gpio_init(pio0, GPIO_DATA_DIR);
-    pio_sm_set_pindirs_with_mask(pio0, 0, 7ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
-    pio_sm_set_pins_with_mask(   pio0, 0, 3ul << GPIO_ADDR_OE, 7ul << GPIO_ADDR_OE);
+    pio_sm_set_pindirs_with_mask(pio0, 0, 0b111 << GPIO_ADDR_OE, 0b111 << GPIO_ADDR_OE);
+    pio_sm_set_pins_with_mask(   pio0, 0, 0b011 << GPIO_ADDR_OE, 0b111 << GPIO_ADDR_OE);
 
     gpio_init(GPIO_RESET);
     gpio_disable_pulls(GPIO_RESET);
