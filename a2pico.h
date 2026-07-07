@@ -29,31 +29,19 @@ SOFTWARE.
 
 #include <hardware/pio.h>
 
+#define SM_ADDR     0
+#define SM_READ     1
+#define SM_WRITE    2
+
 #ifdef RASPBERRYPI_PICO2
 
 #define RW_BIT  0x100000
-
-#define PIO_ADDR    pio0
-#define PIO_READ    pio1
-#define PIO_WRITE   pio1
-
-#define SM_ADDR     3
-#define SM_READ     0
-#define SM_WRITE    1
 
 #define GPIO_IRQ    0
 
 #else
 
 #define RW_BIT  0x1000
-
-#define PIO_ADDR    pio0
-#define PIO_READ    pio0
-#define PIO_WRITE   pio0
-
-#define SM_ADDR     0
-#define SM_READ     1
-#define SM_WRITE    2
 
 #define GPIO_IRQ    18
 
@@ -71,22 +59,22 @@ void a2pico_resethandler(void(*handler)(bool asserted));
 void a2pico_synchandler(void(*handler)(void), uint32_t counter);
 
 static __always_inline uint32_t a2pico_getaddr(void) {
-    while (PIO_ADDR->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
+    while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
         tight_loop_contents();
     }
-    return PIO_ADDR->rxf[SM_ADDR];
+    return pio0->rxf[SM_ADDR];
 }
 
 static __always_inline uint32_t a2pico_getdata(void) {
     uint retry = 32;
-    while (PIO_WRITE->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE)) && --retry) {
+    while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_WRITE)) && --retry) {
         tight_loop_contents();
     }
-    return PIO_WRITE->rxf[SM_WRITE];
+    return pio0->rxf[SM_WRITE];
 }
 
 static __always_inline void a2pico_putdata(uint32_t data) {
-    PIO_READ->txf[SM_READ] = data;
+    pio0->txf[SM_READ] = data;
 }
 
 static __always_inline void a2pico_irq(bool assert) {

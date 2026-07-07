@@ -64,48 +64,6 @@ Implementation of the Apple II peripheral bus protocol:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-.program devsel
-
-.wrap_target
-
-    wait 0 gpio GPIO_DEVSEL     // wait for DEVSEL to fall
-
-    irq IRQ_ADDR                // set 'addr' IRQ
-
-    wait 1 gpio GPIO_DEVSEL     // wait for DEVSEL to rise
-
-.wrap
-
-///////////////////////////////////////////////////////////////////////////////
-
-.program iosel
-
-.wrap_target
-
-    wait 0 gpio GPIO_IOSEL      // wait for IOSEL to fall
-
-    irq IRQ_ADDR                // set 'addr' IRQ
-
-    wait 1 gpio GPIO_IOSEL      // wait for IOSEL to rise
-
-.wrap
-
-///////////////////////////////////////////////////////////////////////////////
-
-.program iostrb
-
-.wrap_target
-
-    wait 0 gpio GPIO_IOSTRB     // wait for IOSTRB to fall
-
-    irq IRQ_ADDR                // set 'addr' IRQ
-
-    wait 1 gpio GPIO_IOSTRB     // wait for IOSTRB to rise
-
-.wrap
-
-///////////////////////////////////////////////////////////////////////////////
-
 .program addr
 
 .wrap_target
@@ -117,7 +75,7 @@ idle:
 
     jmp pin idle                // jump to 'idle' if R/W is high
 
-    irq next set IRQ_WRITE      // set 'write' IRQ on next PIO block
+    irq IRQ_WRITE               // set 'write' IRQ
 
 .wrap
 
@@ -226,6 +184,48 @@ loop:
     jmp x-- loop                // jump to 'loop' if X != 0, prior to decrement
 
     irq IRQ_SYNC                // set 'sync' IRQ
+
+.wrap
+
+///////////////////////////////////////////////////////////////////////////////
+
+.program devsel
+
+.wrap_target
+
+    wait 0 gpio GPIO_DEVSEL     // wait for DEVSEL to fall
+
+    irq prev set IRQ_ADDR       // set 'addr' IRQ on previous PIO block
+
+    wait 1 gpio GPIO_DEVSEL     // wait for DEVSEL to rise
+
+.wrap
+
+///////////////////////////////////////////////////////////////////////////////
+
+.program iosel
+
+.wrap_target
+
+    wait 0 gpio GPIO_IOSEL      // wait for IOSEL to fall
+
+    irq prev set IRQ_ADDR       // set 'addr' IRQ on previous PIO block
+
+    wait 1 gpio GPIO_IOSEL      // wait for IOSEL to rise
+
+.wrap
+
+///////////////////////////////////////////////////////////////////////////////
+
+.program iostrb
+
+.wrap_target
+
+    wait 0 gpio GPIO_IOSTRB     // wait for IOSTRB to fall
+
+    irq prev set IRQ_ADDR       // set 'addr' IRQ on previous PIO block
+
+    wait 1 gpio GPIO_IOSTRB     // wait for IOSTRB to rise
 
 .wrap
 
