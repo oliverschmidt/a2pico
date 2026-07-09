@@ -32,17 +32,27 @@ SOFTWARE.
 .define public  GPIO_ADDR        2  // 12 pins
 .define public  GPIO_DATA       14  //  8 pins
 .define public  GPIO_RW         22
+
+.define public  SIZE_ADDR       21  // incl. DATA + R/W
+.define public  SIZE_DATA        8
+
+.define         IRQ_SYNC         0
+.define         IRQ_WRITE        1
+
+// A2Pico2Lite W //////////////////////////////////////////////////////////////
+
+.define public  GPIO_ENBL       26
+.define public  GPIO_RESET      27
+
+// A2Pico2Lite ////////////////////////////////////////////////////////////////
+
 .define public  GPIO_DEVSEL     26
 .define public  GPIO_IOSEL      27
 .define public  GPIO_IOSTRB     28
 
-.define public  SIZE_ADDR       21  // incl. DATA + R/W
 .define public  SIZE_ENBL        3  // DEVSEL + IOSEL + IOSTRB
-.define public  SIZE_DATA        8
 
-.define         IRQ_SYNC         0
-.define         IRQ_ADDR         1
-.define         IRQ_WRITE        2
+.define         IRQ_ADDR         2
 
 /*
 
@@ -63,6 +73,24 @@ Implementation of the Apple II peripheral bus protocol:
 */
 
 ///////////////////////////////////////////////////////////////////////////////
+
+.program addr_w
+
+.wrap_target
+
+idle:
+    wait 1 gpio GPIO_ENBL       // wait for ENBL to rise
+
+    wait 0 gpio GPIO_ENBL       // wait for ENBL to fall
+
+    in pins, SIZE_ADDR          // shift A0-A15 + D0-D7 + R/W into ISR
+
+    jmp pin idle                // jump to 'idle' if R/W is high
+
+    irq IRQ_WRITE               // set 'write' IRQ
+
+.wrap
+
 
 .program addr
 
@@ -122,6 +150,23 @@ static inline void write_program_set_config(pio_sm_config *c) {
 %}
 
 ///////////////////////////////////////////////////////////////////////////////
+
+.program read_w
+
+.wrap_target
+
+    pull block                  // pull data into OSR, block on empty FIFO
+
+    out pins, SIZE_DATA         // shift OSR out to D0-D7
+
+    mov pindirs, ~null          // enable output of D0-D7
+
+    wait 1 gpio GPIO_ENBL       // wait for ENBL to rise
+
+    mov pindirs, null           // disable output of D0-D7
+
+.wrap
+
 
 .program read
 

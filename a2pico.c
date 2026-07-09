@@ -24,11 +24,17 @@ SOFTWARE.
 
 */
 
+#include <hardware/adc.h>
+
 #include "a2pico.pio.h"
 
 #include "a2pico.h"
 
 #define SM_SYNC 3
+
+static volatile bool ready;
+
+static bool wifi;
 
 static struct {
     uint          offset;
@@ -65,6 +71,14 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 }
 
 void a2pico_init(void) {
+    // see 'Connecting to the Internet with Raspberry Pi Pico W-series.'
+    //     section 'Which hardware am I running on?'
+    adc_init();
+    adc_gpio_init(29);
+    adc_select_input(3);
+    wifi = adc_read() < 500;
+    ready = true;
+
     pio_gpio_init(pio0, GPIO_ENBL);
     gpio_disable_pulls(GPIO_ENBL);
 
@@ -109,6 +123,13 @@ void a2pico_init(void) {
     if (gpio_get(GPIO_RESET)) {
         a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
     }                                                 
+}
+
+bool a2pico_wifi(void) {
+    while (!ready) {
+        tight_loop_contents();
+    }
+    return wifi;
 }
 
 void a2pico_resethandler(void(*handler)(bool)) {

@@ -56,6 +56,8 @@ void main(void) {
 
     printf("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
 
+    printf("WiFi is%savailable\n\n", a2pico_wifi() ? " " : " not ");
+
     a2pico_synchandler(synchandler, 5000000);
 
     while (true) {

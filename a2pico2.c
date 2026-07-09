@@ -24,6 +24,8 @@ SOFTWARE.
 
 */
 
+#include <hardware/adc.h>
+
 #include "a2pico2.pio.h"
 
 #include "a2pico.h"
@@ -34,6 +36,10 @@ SOFTWARE.
 #define SM_DEVSEL 0
 #define SM_IOSEL  1
 #define SM_IOSTRB 2
+
+static volatile bool ready;
+
+static bool wifi;
 
 static struct {
     uint          offset;
@@ -70,6 +76,14 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 }
 
 void a2pico_init(void) {
+    // see 'Connecting to the Internet with Raspberry Pi Pico W-series.'
+    //     section 'Which hardware am I running on?'
+    adc_init();
+    adc_gpio_init(29);
+    adc_select_input(3);
+    wifi = adc_read() < 500;
+    ready = true;
+
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
         pio_gpio_init(pio0, gpio);
         gpio_disable_pulls(gpio);
@@ -80,11 +94,6 @@ void a2pico_init(void) {
     pio_gpio_init(pio0, GPIO_PHI0);
     gpio_disable_pulls(GPIO_PHI0);
 
-    for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
-        pio_gpio_init(pio1, gpio);
-        gpio_disable_pulls(gpio);
-    }
-
     gpio_init(GPIO_IRQ);
     gpio_disable_pulls(GPIO_IRQ);
     gpio_set_drive_strength(GPIO_IRQ, GPIO_DRIVE_STRENGTH_12MA);
@@ -92,11 +101,11 @@ void a2pico_init(void) {
 
     pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
 
-    a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
+    a2_sm[SM_ADDR].offset = pio_add_program(pio0, wifi ? &addr_w_program : &addr_program);
     a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
     addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-    a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
+    a2_sm[SM_READ].offset = pio_add_program(pio0, wifi ? &read_w_program : &read_program);
     a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
     read_program_set_config(&a2_sm[SM_READ].config);
 
@@ -104,26 +113,49 @@ void a2pico_init(void) {
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 
-    pio_claim_sm_mask(pio1, 0b0111);
+    if (wifi) {
+        pio_gpio_init(pio0, GPIO_ENBL);
+        gpio_disable_pulls(GPIO_ENBL);
 
-    uint          offset;
-    pio_sm_config config;
+        gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
+                                                     | GPIO_IRQ_EDGE_RISE, true, a2_reset);
+        if (gpio_get(GPIO_RESET)) {
+            a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
+        }                                                 
+    } else {
+        for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
+            pio_gpio_init(pio1, gpio);
+            gpio_disable_pulls(gpio);
+        }
 
-    offset = pio_add_program(pio1, &devsel_program);
-    config = devsel_program_get_default_config(offset);
-    pio_sm_init(pio1, SM_DEVSEL, offset, &config);
+        pio_claim_sm_mask(pio1, 0b0111);
 
-    offset = pio_add_program(pio1, &iosel_program);
-    config = iosel_program_get_default_config(offset);
-    pio_sm_init(pio1, SM_IOSEL, offset, &config);
+        uint          offset;
+        pio_sm_config config;
 
-    offset = pio_add_program(pio1, &iostrb_program);
-    config = iostrb_program_get_default_config(offset);
-    pio_sm_init(pio1, SM_IOSTRB, offset, &config);
+        offset = pio_add_program(pio1, &devsel_program);
+        config = devsel_program_get_default_config(offset);
+        pio_sm_init(pio1, SM_DEVSEL, offset, &config);
 
-    pio_set_sm_mask_enabled(pio1, 0b0111, true);
+        offset = pio_add_program(pio1, &iosel_program);
+        config = iosel_program_get_default_config(offset);
+        pio_sm_init(pio1, SM_IOSEL, offset, &config);
 
-    a2_reset(0, GPIO_IRQ_EDGE_RISE);
+        offset = pio_add_program(pio1, &iostrb_program);
+        config = iostrb_program_get_default_config(offset);
+        pio_sm_init(pio1, SM_IOSTRB, offset, &config);
+
+        pio_set_sm_mask_enabled(pio1, 0b0111, true);
+
+        a2_reset(0, GPIO_IRQ_EDGE_RISE);
+    }
+}
+
+bool a2pico_wifi(void) {
+    while (!ready) {
+        tight_loop_contents();
+    }
+    return wifi;
 }
 
 void a2pico_resethandler(void(*handler)(bool)) {
