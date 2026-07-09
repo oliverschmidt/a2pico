@@ -51,8 +51,7 @@ void main(void) {
         gpio_set_dir(a2pico_led(), GPIO_OUT);
     }
 
-    stdio_init_all();
-
+    stdio_usb_init();
     while (!stdio_usb_connected()) {
     }
 
