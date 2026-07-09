@@ -35,7 +35,39 @@ SOFTWARE.
 #define SM_IOSEL  1
 #define SM_IOSTRB 2
 
+static struct {
+    uint          offset;
+    pio_sm_config config;
+} a2_sm[3];
+
+static void(*a2_resethandler)(bool);
+
 static void(*a2_synchandler)(void);
+
+static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
+    if (events & GPIO_IRQ_EDGE_FALL) {
+        pio_set_sm_mask_enabled(pio0, 0b0111, false);
+        // make sure to get off the bus no matter what
+        pio_sm_set_pindirs_with_mask(pio0, 0, 0, 0b11111111 << GPIO_DATA);
+
+        void(*handler)(bool) = a2_resethandler;
+        if (handler) {
+            handler(true);
+        }
+    }
+    else  // do not come out of reset on spikes
+    if (events & GPIO_IRQ_EDGE_RISE) {
+        for (uint sm = 0; sm < 3; sm++) {
+            pio_sm_init(pio0, sm, a2_sm[sm].offset, &a2_sm[sm].config);
+        }
+        pio_set_sm_mask_enabled(pio0, 0b0111, true);
+
+        void(*handler)(bool) = a2_resethandler;
+        if (handler) {
+            handler(false);
+        }
+    }
+}
 
 void a2pico_init(void) {
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
@@ -58,29 +90,24 @@ void a2pico_init(void) {
     gpio_set_drive_strength(GPIO_IRQ, GPIO_DRIVE_STRENGTH_12MA);
     gpio_put(GPIO_IRQ, false);  // active low
 
-    uint          offset;
-    pio_sm_config config;
-
     pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
 
-    offset = pio_add_program(pio0, &addr_program);
-    config = addr_program_get_default_config(offset);
-    addr_program_set_config(&config);
-    pio_sm_init(pio0, SM_ADDR, offset, &config);
+    a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
+    a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
+    addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-    offset = pio_add_program(pio0, &read_program);
-    config = read_program_get_default_config(offset);
-    read_program_set_config(&config);
-    pio_sm_init(pio0, SM_READ, offset, &config);
+    a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
+    a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
+    read_program_set_config(&a2_sm[SM_READ].config);
 
-    offset = pio_add_program(pio0, &write_program);
-    config = write_program_get_default_config(offset);
-    write_program_set_config(&config);
-    pio_sm_init(pio0, SM_WRITE, offset, &config);
-
-    pio_set_sm_mask_enabled(pio0, 0b0111, true);
+    a2_sm[SM_WRITE].offset = pio_add_program(pio0, &write_program);
+    a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
+    write_program_set_config(&a2_sm[SM_WRITE].config);
 
     pio_claim_sm_mask(pio1, 0b0111);
+
+    uint          offset;
+    pio_sm_config config;
 
     offset = pio_add_program(pio1, &devsel_program);
     config = devsel_program_get_default_config(offset);
@@ -95,9 +122,12 @@ void a2pico_init(void) {
     pio_sm_init(pio1, SM_IOSTRB, offset, &config);
 
     pio_set_sm_mask_enabled(pio1, 0b0111, true);
+
+    a2_reset(0, GPIO_IRQ_EDGE_RISE);
 }
 
 void a2pico_resethandler(void(*handler)(bool)) {
+    a2_resethandler = handler;
 }
 
 static void a2_sync(void) {

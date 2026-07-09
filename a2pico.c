@@ -42,6 +42,7 @@ static void(*a2_synchandler)(void);
 static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
     if (events & GPIO_IRQ_EDGE_FALL) {
         pio_set_sm_mask_enabled(pio0, 0b0111, false);
+        // make sure to get off the bus no matter what
         pio_sm_set_pins_with_mask(pio0, 0, 0b011 << GPIO_ADDR_OE, 0b111 << GPIO_ADDR_OE);
 
         void(*handler)(bool) = a2_resethandler;
