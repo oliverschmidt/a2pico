@@ -32,9 +32,7 @@ SOFTWARE.
 
 #define SM_SYNC 3
 
-static volatile bool ready;
-
-static bool wifi;
+static volatile int wifi = -1;
 
 static struct {
     uint          offset;
@@ -77,7 +75,6 @@ void a2pico_init(void) {
     adc_gpio_init(29);
     adc_select_input(3);
     wifi = adc_read() < 500;
-    ready = true;
 
     pio_gpio_init(pio0, GPIO_ENBL);
     gpio_disable_pulls(GPIO_ENBL);
@@ -126,7 +123,7 @@ void a2pico_init(void) {
 }
 
 bool a2pico_wifi(void) {
-    while (!ready) {
+    while (wifi == -1) {
         tight_loop_contents();
     }
     return wifi;
