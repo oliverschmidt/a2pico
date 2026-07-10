@@ -136,6 +136,14 @@ int a2pico_led(void) {
     return a2pico_wifi() ? -1 : 25;
 }
 
+int a2pico_tx(void) {
+    return PICO_DEFAULT_UART_TX_PIN;
+}
+
+int a2pico_rx(void) {
+    return PICO_DEFAULT_UART_RX_PIN;
+}
+
 void a2pico_resethandler(void(*handler)(bool)) {
     a2_resethandler = handler;
 }

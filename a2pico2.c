@@ -159,7 +159,15 @@ bool a2pico_wifi(void) {
 }
 
 int a2pico_led(void) {
-  return a2pico_wifi() ? -1 : 25;
+    return a2pico_wifi() ? -1 : 25;
+}
+
+int a2pico_tx(void) {
+    return a2pico_wifi() ? 28 : -1;
+}
+
+int a2pico_rx(void) {
+    return -1;
 }
 
 void a2pico_resethandler(void(*handler)(bool)) {

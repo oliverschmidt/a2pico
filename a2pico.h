@@ -58,6 +58,10 @@ bool a2pico_wifi(void);
 
 int a2pico_led(void);
 
+int a2pico_tx(void);
+
+int a2pico_rx(void);
+
 void a2pico_resethandler(void(*handler)(bool asserted));
 
 void a2pico_synchandler(void(*handler)(void), uint32_t counter);
