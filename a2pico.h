@@ -33,7 +33,7 @@ SOFTWARE.
 #define SM_READ     1
 #define SM_WRITE    2
 
-#ifdef RASPBERRYPI_PICO2
+#if PICO_RP2350
 
 #define RW_BIT  0x100000
 
