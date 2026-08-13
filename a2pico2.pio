@@ -74,7 +74,7 @@ Implementation of the Apple II peripheral bus protocol:
 
 ///////////////////////////////////////////////////////////////////////////////
 
-.program addr_w
+.program addr
 
 .wrap_target
 
@@ -92,7 +92,7 @@ idle:
 .wrap
 
 
-.program addr
+.program addr_indirect
 
 .wrap_target
 
@@ -151,7 +151,7 @@ static inline void write_program_set_config(pio_sm_config *c) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-.program read_w
+.program read
 
 .wrap_target
 
@@ -168,7 +168,7 @@ static inline void write_program_set_config(pio_sm_config *c) {
 .wrap
 
 
-.program read
+.program read_indirect
 
     set y, 0b111                // inactive state of DEVSEL, IOSEL and IOSTRB
 

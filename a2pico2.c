@@ -37,7 +37,7 @@ SOFTWARE.
 #define SM_IOSEL  1
 #define SM_IOSTRB 2
 
-static volatile int wifi = -1;
+static volatile int radio = -1;
 
 static struct {
     uint          offset;
@@ -79,7 +79,7 @@ void a2pico_init(void) {
     adc_init();
     adc_gpio_init(29);
     adc_select_input(3);
-    wifi = adc_read() < 500;
+    radio = adc_read() < 500;
 
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
         pio_gpio_init(pio0, gpio);
@@ -98,21 +98,21 @@ void a2pico_init(void) {
 
     pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
 
-    a2_sm[SM_ADDR].offset = pio_add_program(pio0, wifi ? &addr_w_program : &addr_program);
-    a2_sm[SM_ADDR].config = wifi ? addr_w_program_get_default_config(a2_sm[SM_ADDR].offset)
-                                 : addr_program_get_default_config(a2_sm[SM_ADDR].offset);
+    a2_sm[SM_ADDR].offset = pio_add_program(pio0, radio ? &addr_program : &addr_indirect_program);
+    a2_sm[SM_ADDR].config = radio ? addr_program_get_default_config(a2_sm[SM_ADDR].offset)
+                                  : addr_indirect_program_get_default_config(a2_sm[SM_ADDR].offset);
     addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-    a2_sm[SM_READ].offset = pio_add_program(pio0, wifi ? &read_w_program : &read_program);
-    a2_sm[SM_READ].config = wifi ? read_w_program_get_default_config(a2_sm[SM_READ].offset)
-                                 : read_program_get_default_config(a2_sm[SM_READ].offset);
+    a2_sm[SM_READ].offset = pio_add_program(pio0, radio ? &read_program : &read_indirect_program);
+    a2_sm[SM_READ].config = radio ? read_program_get_default_config(a2_sm[SM_READ].offset)
+                                  : read_indirect_program_get_default_config(a2_sm[SM_READ].offset);
     read_program_set_config(&a2_sm[SM_READ].config);
 
     a2_sm[SM_WRITE].offset = pio_add_program(pio0, &write_program);
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 
-    if (wifi) {
+    if (radio) {
         pio_gpio_init(pio0, GPIO_ENBL);
         gpio_disable_pulls(GPIO_ENBL);
 
@@ -153,19 +153,19 @@ void a2pico_init(void) {
     }
 }
 
-bool a2pico_wifi(void) {
-    while (wifi == -1) {
+bool a2pico_radio(void) {
+    while (radio == -1) {
         tight_loop_contents();
     }
-    return wifi;
+    return radio;
 }
 
 int a2pico_led(void) {
-    return a2pico_wifi() ? -1 : 25;
+    return a2pico_radio() ? -1 : 25;
 }
 
 int a2pico_tx(void) {
-    return a2pico_wifi() ? 28 : -1;
+    return a2pico_radio() ? 28 : -1;
 }
 
 int a2pico_rx(void) {
