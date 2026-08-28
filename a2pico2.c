@@ -37,8 +37,6 @@ SOFTWARE.
 #define SM_IOSEL  1
 #define SM_IOSTRB 2
 
-static volatile int radio = -1;
-
 static struct {
     uint          offset;
     pio_sm_config config;
@@ -74,13 +72,6 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 }
 
 void a2pico_init(void) {
-    // see 'Connecting to the Internet with Raspberry Pi Pico W-series.'
-    //     section 'Which hardware am I running on?'
-    adc_init();
-    adc_gpio_init(29);
-    adc_select_input(3);
-    radio = adc_read() < 500;
-
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
         pio_gpio_init(pio0, gpio);
         gpio_disable_pulls(gpio);
@@ -98,74 +89,83 @@ void a2pico_init(void) {
 
     pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
 
-    a2_sm[SM_ADDR].offset = pio_add_program(pio0, radio ? &addr_program : &addr_indirect_program);
-    a2_sm[SM_ADDR].config = radio ? addr_program_get_default_config(a2_sm[SM_ADDR].offset)
-                                  : addr_indirect_program_get_default_config(a2_sm[SM_ADDR].offset);
+#if PICO_CYW43_SUPPORTED
+    a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
+    a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
+#else
+    a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_indirect_program);
+    a2_sm[SM_ADDR].config = addr_indirect_program_get_default_config(a2_sm[SM_ADDR].offset);
+#endif
     addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-    a2_sm[SM_READ].offset = pio_add_program(pio0, radio ? &read_program : &read_indirect_program);
-    a2_sm[SM_READ].config = radio ? read_program_get_default_config(a2_sm[SM_READ].offset)
-                                  : read_indirect_program_get_default_config(a2_sm[SM_READ].offset);
+#if PICO_CYW43_SUPPORTED
+    a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
+    a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
+#else
+    a2_sm[SM_READ].offset = pio_add_program(pio0, &read_indirect_program);
+    a2_sm[SM_READ].config = read_indirect_program_get_default_config(a2_sm[SM_READ].offset);
+#endif
     read_program_set_config(&a2_sm[SM_READ].config);
 
     a2_sm[SM_WRITE].offset = pio_add_program(pio0, &write_program);
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 
-    if (radio) {
-        pio_gpio_init(pio0, GPIO_ENBL);
-        gpio_disable_pulls(GPIO_ENBL);
+#if PICO_CYW43_SUPPORTED
+    pio_gpio_init(pio0, GPIO_ENBL);
+    gpio_disable_pulls(GPIO_ENBL);
 
-        gpio_init(GPIO_RESET);
-        gpio_disable_pulls(GPIO_RESET);
+    gpio_init(GPIO_RESET);
+    gpio_disable_pulls(GPIO_RESET);
 
-        gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
-                                                     | GPIO_IRQ_EDGE_RISE, true, a2_reset);
-        if (gpio_get(GPIO_RESET)) {
-            a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
-        }                                                 
-    } else {
-        for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
-            pio_gpio_init(pio1, gpio);
-            gpio_disable_pulls(gpio);
-        }
-
-        pio_claim_sm_mask(pio1, 0b0111);
-
-        uint          offset;
-        pio_sm_config config;
-
-        offset = pio_add_program(pio1, &devsel_program);
-        config = devsel_program_get_default_config(offset);
-        pio_sm_init(pio1, SM_DEVSEL, offset, &config);
-
-        offset = pio_add_program(pio1, &iosel_program);
-        config = iosel_program_get_default_config(offset);
-        pio_sm_init(pio1, SM_IOSEL, offset, &config);
-
-        offset = pio_add_program(pio1, &iostrb_program);
-        config = iostrb_program_get_default_config(offset);
-        pio_sm_init(pio1, SM_IOSTRB, offset, &config);
-
-        pio_set_sm_mask_enabled(pio1, 0b0111, true);
-
-        a2_reset(0, GPIO_IRQ_EDGE_RISE);
+    gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
+                                                    | GPIO_IRQ_EDGE_RISE, true, a2_reset);
+    if (gpio_get(GPIO_RESET)) {
+        a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
     }
-}
-
-bool a2pico_radio(void) {
-    while (radio == -1) {
-        tight_loop_contents();
+#else
+    for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
+        pio_gpio_init(pio1, gpio);
+        gpio_disable_pulls(gpio);
     }
-    return radio;
+
+    pio_claim_sm_mask(pio1, 0b0111);
+
+    uint          offset;
+    pio_sm_config config;
+
+    offset = pio_add_program(pio1, &devsel_program);
+    config = devsel_program_get_default_config(offset);
+    pio_sm_init(pio1, SM_DEVSEL, offset, &config);
+
+    offset = pio_add_program(pio1, &iosel_program);
+    config = iosel_program_get_default_config(offset);
+    pio_sm_init(pio1, SM_IOSEL, offset, &config);
+
+    offset = pio_add_program(pio1, &iostrb_program);
+    config = iostrb_program_get_default_config(offset);
+    pio_sm_init(pio1, SM_IOSTRB, offset, &config);
+
+    pio_set_sm_mask_enabled(pio1, 0b0111, true);
+
+    a2_reset(0, GPIO_IRQ_EDGE_RISE);
+#endif
 }
 
 int a2pico_led(void) {
-    return a2pico_radio() ? -1 : 25;
+#if PICO_CYW43_SUPPORTED
+    return -1;
+#else
+    return 25;
+#endif
 }
 
 int a2pico_tx(void) {
-    return a2pico_radio() ? 28 : -1;
+#if PICO_CYW43_SUPPORTED
+    return 28;
+#else
+    return -1;
+#endif
 }
 
 int a2pico_rx(void) {

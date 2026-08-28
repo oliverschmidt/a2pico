@@ -24,15 +24,11 @@ SOFTWARE.
 
 */
 
-#include <hardware/adc.h>
-
 #include "a2pico.pio.h"
 
 #include "a2pico.h"
 
 #define SM_SYNC 3
-
-static volatile int radio = -1;
 
 static struct {
     uint          offset;
@@ -69,13 +65,6 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 }
 
 void a2pico_init(void) {
-    // see 'Connecting to the Internet with Raspberry Pi Pico W-series.'
-    //     section 'Which hardware am I running on?'
-    adc_init();
-    adc_gpio_init(29);
-    adc_select_input(3);
-    radio = adc_read() < 500;
-
     pio_gpio_init(pio0, GPIO_ENBL);
     gpio_disable_pulls(GPIO_ENBL);
 
@@ -122,15 +111,12 @@ void a2pico_init(void) {
     }                                                 
 }
 
-bool a2pico_radio(void) {
-    while (radio == -1) {
-        tight_loop_contents();
-    }
-    return radio;
-}
-
 int a2pico_led(void) {
-    return a2pico_radio() ? -1 : 25;
+#ifdef PICO_DEFAULT_LED_PIN
+    return PICO_DEFAULT_LED_PIN;
+#else
+    return -1;
+#endif
 }
 
 int a2pico_tx(void) {

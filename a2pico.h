@@ -54,8 +54,6 @@ SOFTWARE.
 
 void a2pico_init(void);
 
-bool a2pico_radio(void);
-
 int a2pico_led(void);
 
 int a2pico_tx(void);
