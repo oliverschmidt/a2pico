@@ -1,8 +1,12 @@
+add_library(a2pico INTERFACE)
+
 if (PICO_RP2350)
         set(A2PICO "2")
 endif ()
 
-add_library(a2pico INTERFACE)
+if (PICO_CYW43_SUPPORTED)
+        target_compile_definitions(a2pico INTERFACE HAVE_ENBL)
+endif ()
 
 target_include_directories(a2pico INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 

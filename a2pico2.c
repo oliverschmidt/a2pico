@@ -89,7 +89,7 @@ void a2pico_init(void) {
 
     pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
 
-#if PICO_CYW43_SUPPORTED
+#if HAVE_ENBL
     a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
     a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
 #else
@@ -98,7 +98,7 @@ void a2pico_init(void) {
 #endif
     addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-#if PICO_CYW43_SUPPORTED
+#if HAVE_ENBL
     a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
     a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
 #else
@@ -111,7 +111,7 @@ void a2pico_init(void) {
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 
-#if PICO_CYW43_SUPPORTED
+#if HAVE_ENBL
     pio_gpio_init(pio0, GPIO_ENBL);
     gpio_disable_pulls(GPIO_ENBL);
 
@@ -153,7 +153,7 @@ void a2pico_init(void) {
 }
 
 int a2pico_led(void) {
-#if PICO_CYW43_SUPPORTED
+#if HAVE_ENBL
     return -1;
 #else
     return 25;
@@ -161,7 +161,7 @@ int a2pico_led(void) {
 }
 
 int a2pico_tx(void) {
-#if PICO_CYW43_SUPPORTED
+#if HAVE_ENBL
     return 28;
 #else
     return -1;
