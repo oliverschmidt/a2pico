@@ -39,7 +39,7 @@ SOFTWARE.
 .define         IRQ_SYNC         0
 .define         IRQ_WRITE        1
 
-// A2Pico2Lite W //////////////////////////////////////////////////////////////
+// A2Pico2 with ENBL //////////////////////////////////////////////////////////
 
 .define public  GPIO_ENBL       26
 .define public  GPIO_RESET      27

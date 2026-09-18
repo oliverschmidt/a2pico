@@ -111,6 +111,10 @@ void a2pico_init(void) {
     }                                                 
 }
 
+bool a2pico_sd(void) {
+    return true;
+}
+
 int a2pico_led(void) {
 #ifdef PICO_DEFAULT_LED_PIN
     return PICO_DEFAULT_LED_PIN;

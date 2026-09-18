@@ -25,6 +25,7 @@ SOFTWARE.
 */
 
 #include <hardware/adc.h>
+#include <hardware/structs/sysinfo.h>
 
 #include "a2pico2.pio.h"
 
@@ -152,9 +153,23 @@ void a2pico_init(void) {
 #endif
 }
 
+bool a2pico_sd(void) {
+#if HAVE_ENBL
+    if (sysinfo_hw->package_sel & 0b1) {
+        return false;
+    }
+    return true;
+#else
+    return false;
+#endif
+}
+
 int a2pico_led(void) {
 #if HAVE_ENBL
-    return -1;
+    if (sysinfo_hw->package_sel & 0b1) {
+        return -1;
+    }
+    return 28;
 #else
     return 25;
 #endif
@@ -162,14 +177,24 @@ int a2pico_led(void) {
 
 int a2pico_tx(void) {
 #if HAVE_ENBL
-    return 28;
+    if (sysinfo_hw->package_sel & 0b1) {
+        return 28;
+    }
+    return 32;
 #else
     return -1;
 #endif
 }
 
 int a2pico_rx(void) {
+#if HAVE_ENBL
+    if (sysinfo_hw->package_sel & 0b1) {
+        return -1;
+    }
+    return 33;
+#else
     return -1;
+#endif
 }
 
 void a2pico_resethandler(void(*handler)(bool)) {
