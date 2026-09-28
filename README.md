@@ -14,6 +14,10 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 * [SMD card](https://apple2.co.uk/Products#a2pico-multifunction-card) and [design](https://github.com/rallepalaveev/a2pico/tree/main/A2Pico.v2.7)
 * [SMD card](https://jcm-1.com/product/a2pico/) for the U.S.
 
+### A2Pico2
+
+* [Card](https://apple2.co.uk/Products#a2pico2-v1-2) and [design](https://github.com/rallepalaveev/A2Pico2/tree/main/v1.2)
+
 ### A2Pico2Lite
 
 * [TH card](https://apple2.co.uk/Products#a2pico2lite) and [design](https://github.com/rallepalaveev/A2Pico2Lite/tree/main/TH)
@@ -22,7 +26,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 ### A2Pico2Lite W
 
-* [SMD design](https://github.com/rallepalaveev/A2Pico2Lite/tree/main/W)
+* [Design](https://github.com/rallepalaveev/A2Pico2Lite/tree/main/W)
 
 ## Firmware
 
@@ -52,7 +56,7 @@ Every A2Pico firmware is flashed in the same extremly simple and foolproof way.
 4. Copy the firmware `.uf2` file to the `RPI-RP2` or `RP2350` drive, e.g., by drag & drop.
 5. Disconnect the card from the PC. Done.
 
-## Background
+## History
 
 ### A2Pico
 
@@ -78,6 +82,10 @@ In addition to the transceivers, the _A2Pico2Lite_ also eliminates the AND gate 
 
 The _A2Pico2Lite W_ reintroduces the AND gate found on the _A2Pico_. This allows the _A2Pico2Lite W_ to not fully reset on every Ctrl-Reset - which is necessary to bypass the time-consuming process of reconnecting to a wireless network that would otherwise be required each time.
 
+### A2Pico2
+
+The _A2Pico2_ is the first _A2Pico_ to be based on a Raspberry Pi QFN-80 chip. This puts an end to the shortage of GPIOs.
+
 ## Theory of Operation
 
 ### A2Pico
@@ -86,7 +94,7 @@ The _A2Pico2Lite W_ reintroduces the AND gate found on the _A2Pico_. This allows
 
 #### GPIO Mapping
 
-| GPIO   | Usage    |
+| GPIO   | A2Pico   |
 |:------:|:--------:|
 | 0      | UART0 TX |
 | 1      | UART0 RX |
@@ -113,45 +121,31 @@ In case of a 6502 write cycle, the __write__ state machine latches lines D0-D7 ~
 
 In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte in time for the 6502 to pick it up. As soon as it has done so, it pushes the byte into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO and drives out the byte to the lines D0-D7 until the rising edge of ENBL.
 
-### A2Pico2Lite
-
-#### GPIO Mapping
-
-| GPIO    | Usage    |
-|:-------:|:--------:|
-| 0       | /IRQ     |
-| 1       | $\Phi$ 0 |
-| 2 - 13  | A0 - A11 |
-| 14 - 21 | D0 - D7  |
-| 22      | R/W      |
-| 26      | /DEVSEL  |
-| 27      | /IOSEL   |
-| 28      | /IOSTRB  |
-
-There are seven PIO state machines: __devsel__, __iosel__, __iostrb__, __addr_indirect__, __read_indirect__, __write__ and __sync__. The ARM core 0 is operated in a traditional way: Running from cached Flash, calling into the C library, being interrupted by the USB library, etc. However, The ARM core 1 is dedicated to interact with the __addr__, __read_indirect__ and __write_indirect__ PIO state machines. Therefore it runs from RAM, calls only inline functions and is never interrupted.
-
-On the falling edge of /DEVSEL, /IOSEL or /IOSTRB, the __devsel__, __iosel__ or __iostrb__ state machine triggers the __addr_indirect__ state machine. The __addr_indirect__ state machine latches lines A0-A11, D0-D7 plus R/W and pushes the data into its RX FIFO. In case of a 6502 write cycle, it additionally triggers the __write__ state machine. The ARM core 1 waits on that FIFO, decodes the address parts and branches based on R/W.
-
-In case of a 6502 write cycle, the __write__ state machine latches lines D0-D7 ~300ns later again and pushes the byte into its RX FIFO. By then, the ARM core 1 waits on that FIFO and processes the byte.
-
-In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte in time for the 6502 to pick it up. As soon as it has done so, it pushes the byte into the __read_indirect__ state machine TX FIFO. That state machine waits on its TX FIFO and drives out the byte to the lines D0-D7 until /DEVSEL, /IOSEL and /IOSTRB are all high.
-
-### A2Pico2Lite W
+### A2Pico2 and A2Pico2Lite W
 
 /DEVSEL, /IOSEL and /IOSTRB are combined to ENBL via an AND gate.
 
 #### GPIO Mapping
 
-| GPIO    | Usage    |
-|:-------:|:--------:|
-| 0       | /IRQ     |
-| 1       | $\Phi$ 0 |
-| 2 - 13  | A0 - A11 |
-| 14 - 21 | D0 - D7  |
-| 22      | R/W      |
-| 26      | ENBL     |
-| 27      | RESET    |
-| 28      | UART0 TX |
+| GPIO    | A2Pico2          | A2Pico2Lite W |
+|:-------:|:----------------:|:-------------:|
+| 0       | /IRQ             | /IRQ          |
+| 1       | $\Phi$ 0         | $\Phi$ 0      |
+| 2 - 13  | A0 - A11         | A0 - A11      |
+| 14 - 21 | D0 - D7          | D0 - D7       |
+| 22      | R/W              | R/W           |
+| 26      | ENBL             | ENBL          |
+| 27      | RESET            | RESET         |
+| 28      | LED              | UART0 TX      |
+| 30      | UART0 CTS        |
+| 31      | UART0 RTS        |
+| 32      | UART0 TX         |
+| 33      | UART0 RX         |
+| 34      | SDIO CLK         |
+| 35      | SDIO CMD         |
+| 36 - 39 | SDIO DAT0 - DAT3 |
+| 40      | SD DETECT        |
+| 41      | GND              |
 
 There are four PIO state machines: __addr__, __read__, __write__ and __sync__. The ARM core 0 is operated in a traditional way: Running from cached Flash, calling into the C library, being interrupted by the USB library, etc. However, The ARM core 1 is dedicated to interact with the __addr__, __read__ and __write__ PIO state machines. Therefore it runs from RAM, calls only inline functions and is never interrupted.
 
@@ -160,3 +154,26 @@ On the falling edge of ENBL, the __addr__ state machine latches lines A0-A11, D0
 In case of a 6502 write cycle, the __write__ state machine latches lines D0-D7 ~300ns later again and pushes the byte into its RX FIFO. By then, the ARM core 1 waits on that FIFO and processes the byte.
 
 In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte in time for the 6502 to pick it up. As soon as it has done so, it pushes the byte into the __read__ state machine TX FIFO. That state machine waits on its TX FIFO and drives out the byte to the lines D0-D7 until the rising edge of ENBL.
+
+### A2Pico2Lite
+
+#### GPIO Mapping
+
+| GPIO    | A2Pico2Lite |
+|:-------:|:-----------:|
+| 0       | /IRQ        |
+| 1       | $\Phi$ 0    |
+| 2 - 13  | A0 - A11    |
+| 14 - 21 | D0 - D7     |
+| 22      | R/W         |
+| 26      | /DEVSEL     |
+| 27      | /IOSEL      |
+| 28      | /IOSTRB     |
+
+There are seven PIO state machines: __devsel__, __iosel__, __iostrb__, __addr_indirect__, __read_indirect__, __write__ and __sync__. The ARM core 0 is operated in a traditional way: Running from cached Flash, calling into the C library, being interrupted by the USB library, etc. However, The ARM core 1 is dedicated to interact with the __addr__, __read_indirect__ and __write_indirect__ PIO state machines. Therefore it runs from RAM, calls only inline functions and is never interrupted.
+
+On the falling edge of /DEVSEL, /IOSEL or /IOSTRB, the __devsel__, __iosel__ or __iostrb__ state machine triggers the __addr_indirect__ state machine. The __addr_indirect__ state machine latches lines A0-A11, D0-D7 plus R/W and pushes the data into its RX FIFO. In case of a 6502 write cycle, it additionally triggers the __write__ state machine. The ARM core 1 waits on that FIFO, decodes the address parts and branches based on R/W.
+
+In case of a 6502 write cycle, the __write__ state machine latches lines D0-D7 ~300ns later again and pushes the byte into its RX FIFO. By then, the ARM core 1 waits on that FIFO and processes the byte.
+
+In case of a 6502 read cycle, it's up to the ARM core 1 code to produce a byte in time for the 6502 to pick it up. As soon as it has done so, it pushes the byte into the __read_indirect__ state machine TX FIFO. That state machine waits on its TX FIFO and drives out the byte to the lines D0-D7 until /DEVSEL, /IOSEL and /IOSTRB are all high.
