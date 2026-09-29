@@ -45,7 +45,15 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 ### Flashing of a Firmware
 
-Every A2Pico firmware is flashed in the same extremly simple and foolproof way.
+A2Pico firmwares come in three types:
+
+* `<project>_A2Pico_<date>.uf2` is intended exclusively for the _A2Pico_.
+* `<project>_A2Pico2Lite_<date>.uf2` is intended exclusively for the _A2Pico2Lite_.
+* `<project>_A2Pico2-generic_<date>.uf2` is intended exclusively for all other _A2Pico2_ (incl. the _A2Pico2Lite W_).
+
+__Warning: Trying to use an A2Pico with the wrong firmware type can result in physical damage to the card and/or the Apple II !__
+
+The actual firmware flashing process is extremely simple and foolproof:
 
 * _A2Pico2Lite_: Make sure the card is not inserted into an Apple II slot.
 * All other _A2Pico_ types: It doesn't matter wether the card is inserted into an Apple II slot or not. Just make sure the Apple II turned off if the card is inserted.
