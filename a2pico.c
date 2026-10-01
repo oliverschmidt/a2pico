@@ -115,6 +115,14 @@ bool a2pico_sd(void) {
     return true;
 }
 
+bool a2pico_radio(void) {
+    return false;
+}
+
+bool a2pico_eth(void) {
+    return false;
+}
+
 int a2pico_led(void) {
     return PICO_DEFAULT_LED_PIN;
 }

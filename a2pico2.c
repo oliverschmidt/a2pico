@@ -176,6 +176,30 @@ bool a2pico_sd(void) {
 #endif
 }
 
+bool a2pico_radio(void) {
+#ifdef A2PICO2
+    if (IS_LITE) {
+        return false;
+    }
+    gpio_init(41);
+    return gpio_get(41);
+#else
+    return true;
+#endif
+}
+
+bool a2pico_eth(void) {
+#ifdef A2PICO2
+    if (IS_LITE) {
+        return false;
+    }
+    gpio_init(41);
+    return gpio_get(41);
+#else
+    return false;
+#endif
+}
+
 int a2pico_led(void) {
 #ifdef A2PICO2
     if (IS_LITE) {

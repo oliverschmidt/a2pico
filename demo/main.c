@@ -57,6 +57,11 @@ void main(void) {
 
     printf("\n\nCopyright (c) 2022 Oliver Schmidt (https://a2retro.de/)\n\n");
 
+    printf("Features - SD card:%s  Radio:%s  Ethernet:%s\n\n",
+           a2pico_sd()    ? "true" : "false",
+           a2pico_radio() ? "true" : "false",
+           a2pico_eth()   ? "true" : "false"); 
+
     a2pico_synchandler(synchandler, 5000000);
 
     while (true) {

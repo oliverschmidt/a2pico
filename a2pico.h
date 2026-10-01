@@ -49,6 +49,10 @@ void a2pico_init(void);
 
 bool a2pico_sd(void);
 
+bool a2pico_radio(void);
+
+bool a2pico_eth(void);
+
 int a2pico_led(void);
 
 int a2pico_tx(void);
