@@ -35,28 +35,13 @@ SOFTWARE.
 
 #if PICO_RP2350
 
-#define RW_BIT  0x100000
-
+#define RW_BIT      0x100000
 #define GPIO_IRQ    0
-
-#define GPIO_SDIO_CLK   34
-#define GPIO_SDIO_CMD   35
-#define GPIO_SDIO_DAT0  36
-#define GPIO_SDIO_DAT1  37
-#define GPIO_SDIO_DAT2  38
-#define GPIO_SDIO_DAT3  39
-#define GPIO_SDIO_CD    40
 
 #else
 
-#define RW_BIT  0x1000
-
+#define RW_BIT      0x1000
 #define GPIO_IRQ    18
-
-#define GPIO_SPI0_TX    19
-#define GPIO_SPI0_RX    20
-#define GPIO_SPI0_CSN   21
-#define GPIO_SPI0_SCK   22
 
 #endif
 

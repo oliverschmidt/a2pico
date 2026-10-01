@@ -43,6 +43,8 @@ static struct {
     pio_sm_config config;
 } a2_sm[3];
 
+#define IS_LITE (sysinfo_hw->package_sel & 0b1)
+
 static void(*a2_resethandler)(bool);
 
 static void(*a2_synchandler)(void);
@@ -90,72 +92,82 @@ void a2pico_init(void) {
 
     pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
 
-#if HAVE_ENBL
-    a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
-    a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
-#else
-    a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_indirect_program);
-    a2_sm[SM_ADDR].config = addr_indirect_program_get_default_config(a2_sm[SM_ADDR].offset);
+#ifdef A2PICO2
+    if (IS_LITE) {
+        a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_indirect_program);
+        a2_sm[SM_ADDR].config = addr_indirect_program_get_default_config(a2_sm[SM_ADDR].offset);
+    } else
 #endif
+    {
+        a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
+        a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
+    }
     addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-#if HAVE_ENBL
-    a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
-    a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
-#else
-    a2_sm[SM_READ].offset = pio_add_program(pio0, &read_indirect_program);
-    a2_sm[SM_READ].config = read_indirect_program_get_default_config(a2_sm[SM_READ].offset);
+
+#ifdef A2PICO2
+    if (IS_LITE) {
+        a2_sm[SM_READ].offset = pio_add_program(pio0, &read_indirect_program);
+        a2_sm[SM_READ].config = read_indirect_program_get_default_config(a2_sm[SM_READ].offset);
+    } else
 #endif
+    {
+        a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
+        a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
+    }
     read_program_set_config(&a2_sm[SM_READ].config);
 
     a2_sm[SM_WRITE].offset = pio_add_program(pio0, &write_program);
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 
-#if HAVE_ENBL
-    pio_gpio_init(pio0, GPIO_ENBL);
-    gpio_disable_pulls(GPIO_ENBL);
+#ifdef A2PICO2
+    if (IS_LITE) {
+        for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
+            pio_gpio_init(pio1, gpio);
+            gpio_disable_pulls(gpio);
+        }
 
-    gpio_init(GPIO_RESET);
-    gpio_disable_pulls(GPIO_RESET);
+        pio_claim_sm_mask(pio1, 0b0111);
 
-    gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
-                                                    | GPIO_IRQ_EDGE_RISE, true, a2_reset);
-    if (gpio_get(GPIO_RESET)) {
-        a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
-    }
-#else
-    for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
-        pio_gpio_init(pio1, gpio);
-        gpio_disable_pulls(gpio);
-    }
+        uint          offset;
+        pio_sm_config config;
 
-    pio_claim_sm_mask(pio1, 0b0111);
+        offset = pio_add_program(pio1, &devsel_program);
+        config = devsel_program_get_default_config(offset);
+        pio_sm_init(pio1, SM_DEVSEL, offset, &config);
 
-    uint          offset;
-    pio_sm_config config;
+        offset = pio_add_program(pio1, &iosel_program);
+        config = iosel_program_get_default_config(offset);
+        pio_sm_init(pio1, SM_IOSEL, offset, &config);
 
-    offset = pio_add_program(pio1, &devsel_program);
-    config = devsel_program_get_default_config(offset);
-    pio_sm_init(pio1, SM_DEVSEL, offset, &config);
+        offset = pio_add_program(pio1, &iostrb_program);
+        config = iostrb_program_get_default_config(offset);
+        pio_sm_init(pio1, SM_IOSTRB, offset, &config);
 
-    offset = pio_add_program(pio1, &iosel_program);
-    config = iosel_program_get_default_config(offset);
-    pio_sm_init(pio1, SM_IOSEL, offset, &config);
+        pio_set_sm_mask_enabled(pio1, 0b0111, true);
 
-    offset = pio_add_program(pio1, &iostrb_program);
-    config = iostrb_program_get_default_config(offset);
-    pio_sm_init(pio1, SM_IOSTRB, offset, &config);
-
-    pio_set_sm_mask_enabled(pio1, 0b0111, true);
-
-    a2_reset(0, GPIO_IRQ_EDGE_RISE);
+        a2_reset(0, GPIO_IRQ_EDGE_RISE);
+    } else
 #endif
+    {
+        pio_gpio_init(pio0, GPIO_ENBL);
+        gpio_disable_pulls(GPIO_ENBL);
+
+        gpio_init(GPIO_RESET);
+        gpio_disable_pulls(GPIO_RESET);
+
+        gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
+                                                        | GPIO_IRQ_EDGE_RISE, true, a2_reset);
+        if (gpio_get(GPIO_RESET)) {
+            a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
+        }
+    }
 }
 
 bool a2pico_sd(void) {
-#if HAVE_ENBL
-    if (sysinfo_hw->package_sel & 0b1) {
+#ifdef A2PICO2
+    if (IS_LITE) {
         return false;
     }
     return true;
@@ -165,30 +177,30 @@ bool a2pico_sd(void) {
 }
 
 int a2pico_led(void) {
-#if HAVE_ENBL
-    if (sysinfo_hw->package_sel & 0b1) {
-        return -1;
+#ifdef A2PICO2
+    if (IS_LITE) {
+        return 25;
     }
     return 28;
-#else
-    return 25;
-#endif
-}
-
-int a2pico_tx(void) {
-#if HAVE_ENBL
-    if (sysinfo_hw->package_sel & 0b1) {
-        return 28;
-    }
-    return 32;
 #else
     return -1;
 #endif
 }
 
+int a2pico_tx(void) {
+#ifdef A2PICO2
+    if (IS_LITE) {
+        return -1;
+    }
+    return 32;
+#else
+    return 28;
+#endif
+}
+
 int a2pico_rx(void) {
-#if HAVE_ENBL
-    if (sysinfo_hw->package_sel & 0b1) {
+#ifdef A2PICO2
+    if (IS_LITE) {
         return -1;
     }
     return 33;

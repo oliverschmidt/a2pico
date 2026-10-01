@@ -116,11 +116,7 @@ bool a2pico_sd(void) {
 }
 
 int a2pico_led(void) {
-#ifdef PICO_DEFAULT_LED_PIN
     return PICO_DEFAULT_LED_PIN;
-#else
-    return -1;
-#endif
 }
 
 int a2pico_tx(void) {
