@@ -12,11 +12,11 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 * [TH card](https://apple2.co.uk/Products#a2pico-th-card) and [design](https://github.com/rallepalaveev/a2pico/tree/main/A2Pico.v2.6)
 * [SMD card](https://apple2.co.uk/Products#a2pico-multifunction-card) and [design](https://github.com/rallepalaveev/a2pico/tree/main/A2Pico.v2.7)
-* [SMD card](https://jcm-1.com/product/a2pico/) for the U.S.
 
 ### A2Pico2
 
 * [SMD Card](https://apple2.co.uk/Products#a2pico2-v1-2) and [design](https://github.com/rallepalaveev/A2Pico2/tree/main/v1.2)
+* [SMD card](https://jcm-1.com/product/a2pico2/) for the U.S.
 
 ### A2Pico2Lite
 
@@ -27,6 +27,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 ### A2Pico2Lite W
 
 * [SMD Card](https://apple2.co.uk/Products#a2pico2lite-w) and [design](https://github.com/rallepalaveev/A2Pico2Lite/tree/main/W)
+* [SMD card](https://jcm-1.com/product/a2pico2-lite-w-multi-function-card/) for the U.S.
 
 ## Firmware
 
