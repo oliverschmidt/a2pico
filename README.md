@@ -48,15 +48,15 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 A2Pico firmwares come in three types:
 
 * `<project>_A2Pico_<date>.uf2` is intended exclusively for the _A2Pico_.
-* `<project>_A2Pico2Lite_<date>.uf2` is intended exclusively for the _A2Pico2Lite_.
-* `<project>_A2Pico2-generic_<date>.uf2` is intended exclusively for all other _A2Pico2_ (incl. the _A2Pico2Lite W_).
+* `<project>_A2Pico2LiteW_<date>.uf2` is intended exclusively for the _A2Pico2Lite W_.
+* `<project>_A2Pico2-generic_<date>.uf2` is intended exclusively for all other A2Pico2 (incl. the _A2Pico2Lite_).
 
 __Warning: Trying to use an A2Pico with the wrong firmware type can result in physical damage to the card and/or the Apple II !__
 
 The actual firmware flashing process is extremely simple and foolproof:
 
 * _A2Pico2Lite_: Make sure the card is not inserted into an Apple II slot.
-* All other _A2Pico_ types: It doesn't matter wether the card is inserted into an Apple II slot or not. Just make sure the Apple II turned off if the card is inserted.
+* All other A2Pico cards: It doesn't matter wether the card is inserted into an Apple II slot or not. Just make sure the Apple II turned off if the card is inserted.
 
 1. Press and hold the `BOOTSEL`button on the card.
 2. Connect the card to a PC.
@@ -70,7 +70,7 @@ The actual firmware flashing process is extremely simple and foolproof:
 
 Soon after the introduction of the Raspberry Pi Pico in 2021 [Glenn Jones](https://github.com/a2retrosystems) and I started to experiment with directly connecting it to the Apple II slot bus. In 2022 I published a working Pico firmware on GitHub. Based on that we started to implement the _A2retroNET_ project which I presented at KanasFest 2023 (https://youtu.be/ryiH8t4yIuw).
 
-In the meanwhile [Ralle Palaveev](https://github.com/rallepalaveev) created his own _A2Pico_ hardware for the firmware I had published before. In contrast to the hardware I presented on KansasFest, _A2Pico_ consisted completely of through-hole components which allow for very easy DIY assembly. However, at that point my Pico firmware relied on the behavior of components only available as SMD fine-pitch packages. Therefore _A2Pico_ had some functional limitations.
+In the meanwhile [Ralle Palaveev](https://github.com/rallepalaveev) created his own A2Pico hardware for the firmware I had published before. In contrast to the hardware I presented on KansasFest, A2Pico consisted completely of through-hole components which allow for very easy DIY assembly. However, at that point my Pico firmware relied on the behavior of components only available as SMD fine-pitch packages. Therefore A2Pico had some functional limitations.
 
 Considering the next steps after presenting the prototype at KansasFest I decided that my firmware should be accessible to the DIY community so I teamed up with Ralle to modify both hardware and firmware to enable full functionlity with through-hole components only and without any PLDs.
 
@@ -92,7 +92,7 @@ The _A2Pico2Lite W_ reintroduces the AND gate found on the _A2Pico_. This allows
 
 ### A2Pico2
 
-The _A2Pico2_ is the first _A2Pico_ to be based on a Raspberry Pi QFN-80 chip. This puts an end to the shortage of GPIOs.
+The _A2Pico2_ is the first A2Pico to be based on a Raspberry Pi QFN-80 chip. This puts an end to the shortage of GPIOs.
 
 ## Theory of Operation
 
