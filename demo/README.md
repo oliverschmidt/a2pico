@@ -40,4 +40,4 @@ After the terminal has asserted DTR (which most of them do implicitly), the prog
 
 15. Press `ESC` on the terminal. An interrupt handler on the Apple II inverts the character in the lower right corner of the screen.
 
-16. A2Pico only: Press `Ctrl-Reset` on the Apple II. The string ` RESET ` is displayed on the terminal.
+16. All cards except the _A2Pico2Lite_: Press `Ctrl-Reset` on the Apple II. The string ` RESET ` is displayed on the terminal.
