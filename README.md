@@ -38,6 +38,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 * softSP (https://github.com/oliverschmidt/softsp)
 * Appli-Card (https://github.com/oliverschmidt/appli-card)
 * Super Serial Card (https://github.com/oliverschmidt/super-serial-card)
+* Mockingboard (for _A2Pico2Lite W_) (https://github.com/shunkita/a2picoMb)
 * Apple2-IO-RPi (https://github.com/tjboldt/Apple2-IO-RPi)
 * Apple II Pi (https://github.com/oliverschmidt/apple2pi)
 * Brutal Timer (https://github.com/oliverschmidt/brutal-timer)
