@@ -16,7 +16,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 | Radio Module  |                     | :heavy_check_mark:        |                             | :heavy_check_mark:              |
 | Ethernet Port |                     | :heavy_check_mark:        |                             |                                 |
 
-### A2Pico
+### Original A2Pico
 
 * [TH card](https://apple2.co.uk/Products#a2pico-th-card) and [design](https://github.com/rallepalaveev/a2pico/tree/main/A2Pico.v2.6)
 * [SMD card](https://apple2.co.uk/Products#a2pico-multifunction-card) and [design](https://github.com/rallepalaveev/a2pico/tree/main/A2Pico.v2.7)
@@ -82,7 +82,7 @@ The actual firmware flashing process is extremely simple and foolproof:
 
 ## History
 
-### A2Pico
+### Original A2Pico
 
 Soon after the introduction of the Raspberry Pi Pico in 2021 [Glenn Jones](https://github.com/a2retrosystems) and I started to experiment with directly connecting it to the Apple II slot bus. In 2022 I published a working Pico firmware on GitHub. Based on that we started to implement the _A2retroNET_ project which I presented at KanasFest 2023 (https://youtu.be/ryiH8t4yIuw).
 
