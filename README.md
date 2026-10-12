@@ -8,6 +8,14 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 ## Hardware
 
+### Feature Matrix
+
+|               | [A2Pico2](#a2pico2) | [A2Pico2 WE](#a2pico2-we) | [A2Pico2Lite](#a2pico2lite) | [A2Pico2Lite W](#a2pico2lite-w) |
+|---------------|:-------------------:|:-------------------------:|:---------------------------:|:-------------------------------:|
+| SD Card slot  | :heavy_check_mark:  | :heavy_check_mark:        |                             |                                 |
+| Radio module  |                     | :heavy_check_mark:        |                             | :heavy_check_mark:              |
+| Ethernet port |                     | :heavy_check_mark:        |                             |                                 |
+
 ### A2Pico
 
 * [TH card](https://apple2.co.uk/Products#a2pico-th-card) and [design](https://github.com/rallepalaveev/a2pico/tree/main/A2Pico.v2.6)
