@@ -12,9 +12,9 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 |               | [A2Pico2](#a2pico2) | [A2Pico2 WE](#a2pico2-we) | [A2Pico2Lite](#a2pico2lite) | [A2Pico2Lite W](#a2pico2lite-w) |
 |---------------|:-------------------:|:-------------------------:|:---------------------------:|:-------------------------------:|
-| SD Card slot  | :heavy_check_mark:  | :heavy_check_mark:        |                             |                                 |
-| Radio module  |                     | :heavy_check_mark:        |                             | :heavy_check_mark:              |
-| Ethernet port |                     | :heavy_check_mark:        |                             |                                 |
+| SD Card Slot  | :heavy_check_mark:  | :heavy_check_mark:        |                             |                                 |
+| Radio Module  |                     | :heavy_check_mark:        |                             | :heavy_check_mark:              |
+| Ethernet Port |                     | :heavy_check_mark:        |                             |                                 |
 
 ### A2Pico
 
@@ -45,17 +45,19 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 ### Projects based on A2Pico
 
-* A2retroNET (https://github.com/oliverschmidt/a2retronet)
-* Mouse Interface (https://github.com/oliverschmidt/mouse-interface)
-* softSP (https://github.com/oliverschmidt/softsp)
-* Appli-Card (https://github.com/oliverschmidt/appli-card)
-* Super Serial Card (https://github.com/oliverschmidt/super-serial-card)
-* Mockingboard (for _A2Pico2Lite W_) (https://github.com/shunkita/a2picoMb)
-* Apple2-IO-RPi (https://github.com/tjboldt/Apple2-IO-RPi)
-* Apple II Pi (https://github.com/oliverschmidt/apple2pi)
-* Brutal Timer (https://github.com/oliverschmidt/brutal-timer)
-* Bad Apple !!gs (https://github.com/oliverschmidt/bad-apple-iigs)
-* A2Pico Demo (https://github.com/oliverschmidt/a2pico/tree/main/demo)
+|                   | URL                                                    | SD Card Slot | Radio Module | Ethernet Port |
+|-------------------|--------------------------------------------------------|:------------:|:------------:|:-------------:|
+| A2retroNET        | https://github.com/oliverschmidt/a2retronet            | useful       |              |               |
+| Mouse Interface   | https://github.com/oliverschmidt/mouse-interface       |              |              |               |
+| softSP            | https://github.com/oliverschmidt/softsp                |              |              |               |
+| Appli-Card        | https://github.com/oliverschmidt/appli-card            |              |              |               |
+| Super Serial Card | https://github.com/oliverschmidt/super-serial-card     |              |              |               |
+| Mockingboard      | https://github.com/shunkita/a2picoMb                   |              | required     |               |
+| Apple2-IO-RPi     | https://github.com/tjboldt/Apple2-IO-RPi               |              |              |               |
+| Apple II Pi       | https://github.com/oliverschmidt/apple2pi              |              |              |               |
+| Brutal Timer      | https://github.com/oliverschmidt/brutal-timer          |              |              |               |
+| Bad Apple !!gs    | https://github.com/oliverschmidt/bad-apple-iigs        | required     |              |               |
+| A2Pico Demo       | https://github.com/oliverschmidt/a2pico/tree/main/demo |              |              |               |
 
 ### Flashing of a Firmware
 
@@ -107,6 +109,10 @@ The _A2Pico2Lite W_ reintroduces the AND gate found on the _A2Pico_. This allows
 ### A2Pico2
 
 The _A2Pico2_ is the first A2Pico to be based on a Raspberry Pi QFN-80 chip. This puts an end to the shortage of GPIOs.
+
+### A2Pico2 WE
+
+The _A2Pico2 WE_ is the top-of-the-line model in the A2Pico series, combining all features.
 
 ## Theory of Operation
 
