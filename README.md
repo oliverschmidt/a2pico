@@ -63,7 +63,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 A2Pico firmwares come in three types:
 
-* `<project>_A2Pico_<date>.uf2` is intended exclusively for the _A2Pico_.
+* `<project>_A2Pico_<date>.uf2` is intended exclusively for the _Original A2Pico_.
 * `<project>_A2Pico2LiteW_<date>.uf2` is intended exclusively for the _A2Pico2Lite W_.
 * `<project>_A2Pico2-generic_<date>.uf2` is intended exclusively for all other A2Pico2 (incl. the _A2Pico2Lite_).
 
@@ -90,21 +90,21 @@ In the meanwhile [Ralle Palaveev](https://github.com/rallepalaveev) created his 
 
 Considering the next steps after presenting the prototype at KansasFest I decided that my firmware should be accessible to the DIY community so I teamed up with Ralle to modify both hardware and firmware to enable full functionlity with through-hole components only and without any PLDs.
 
-Ralle has now developed an _A2Pico_ variant with SMD components for efficient automated assembly. Both _A2Pico_ variants are 100% functionally identical.
+Ralle has since developed an _Original A2Pico_ variant with SMD components for efficient automated assembly. Both _Original A2Pico_ variants are 100% functionally identical.
 
 Additionally I wanted to establish a software library that avoids duplication of low level code into the different firmware projects that all share the same hardware. The name _A2Pico_ is now used for both the common hardware and the common software.
 
 ### A2Pico2Lite
 
-The introduction of the Raspberry Pi Pico 2 in 2024 brought true 5V tolerance, thus eliminating the need for the _A2Pico's_ transceivers. However, the _A2Pico_ also uses these transceivers to multiplex address and data lines onto the same GPIOs.  
+The introduction of the Raspberry Pi Pico 2 in 2024 brought true 5V tolerance, thus eliminating the need for the _Original A2Pico's_ transceivers. However, the _Original A2Pico_ also uses these transceivers to multiplex address and data lines onto the same GPIOs.  
 
 To take advantage of the 5V tolerance and truly eliminate the transceivers, the multiplexing of address and data lines also had to be removed. Without this multiplexing, however, there is a critical shortage of GPIOs. Therefore, the _A2Pico2Lite_ does __not__ have a Micro SD Card slot. Hence the _Lite_ in its name.
 
-In addition to the transceivers, the _A2Pico2Lite_ also eliminates the AND gate found on the _A2Pico_. Therefore, it requires no ICs at all (apart from those on the Pico 2 module). This allows for the simplest possible DIY TH variant.
+In addition to the transceivers, the _A2Pico2Lite_ also eliminates the AND gate found on the _Original A2Pico_. Therefore, it requires no ICs at all (apart from those on the Pico 2 module). This allows for the simplest possible DIY TH variant.
 
 ### A2Pico2Lite W
 
-The _A2Pico2Lite W_ reintroduces the AND gate found on the _A2Pico_. This allows the _A2Pico2Lite W_ to not fully reset on every Ctrl-Reset - which is necessary to bypass the time-consuming process of reconnecting to a wireless network that would otherwise be required each time.
+The _A2Pico2Lite W_ reintroduces the AND gate found on the _Original A2Pico_. This allows the _A2Pico2Lite W_ to not fully reset on every Ctrl-Reset - which is necessary to bypass the time-consuming process of reconnecting to a wireless network that would otherwise be required each time.
 
 ### A2Pico2
 
@@ -116,7 +116,7 @@ The _A2Pico2 WE_ is the top-of-the-line model in the A2Pico series, combining al
 
 ## Theory of Operation
 
-### A2Pico
+### Original A2Pico
 
 /DEVSEL, /IOSEL and /IOSTRB are combined to ENBL via an AND gate. A0-A7 and D0-D7 are multiplexed to the same GPIOs. D0-D7 direction is controlled by GPIO.
 
