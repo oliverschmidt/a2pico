@@ -24,7 +24,7 @@ SOFTWARE.
 
 */
 
-#include "a2pico.pio.h"
+#include "a2pico1.pio.h"
 
 #include "a2pico.h"
 

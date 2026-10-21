@@ -3,6 +3,8 @@ set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards PARENT_SCOPE)
 function(a2pico_init)
         if (PICO_RP2350)
                 set(A2PICO "2")
+        else ()
+                set(A2PICO "1")
         endif ()
 
         add_library(a2pico INTERFACE)
