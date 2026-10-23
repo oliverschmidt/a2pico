@@ -43,9 +43,6 @@ static void __time_critical_func(handler)(bool asserted) {
 }
 
 void __time_critical_func(board)(void) {
-
-    a2pico_init();
-
     a2pico_resethandler(&handler);
 
     while (true) {

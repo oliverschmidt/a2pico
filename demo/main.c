@@ -27,8 +27,6 @@ SOFTWARE.
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
-#include <hardware/clocks.h>
-#include <hardware/structs/busctrl.h>
 
 #include <a2pico.h>
 
@@ -41,10 +39,7 @@ static void synchandler(void) {
 }
 
 void main(void) {
-    busctrl_hw->priority = BUSCTRL_BUS_PRIORITY_PROC1_BITS;
-    multicore_launch_core1(board);
-
-    set_sys_clock_khz(200000, false);
+    a2pico_init(board);
 
     if (a2pico_led() >= 0) {
         gpio_init(a2pico_led());
@@ -60,7 +55,7 @@ void main(void) {
     printf("Features - SD card:%s  Radio:%s  Ethernet:%s\n\n",
            a2pico_sd()    ? "true" : "false",
            a2pico_radio() ? "true" : "false",
-           a2pico_eth()   ? "true" : "false"); 
+           a2pico_eth()   ? "true" : "false");
 
     a2pico_synchandler(synchandler, 5000000);
 

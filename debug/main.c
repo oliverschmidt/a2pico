@@ -27,18 +27,13 @@ SOFTWARE.
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
-#include <hardware/clocks.h>
-#include <hardware/structs/busctrl.h>
 
 #include <a2pico.h>
 
 #include "board.h"
 
 void main(void) {
-    busctrl_hw->priority = BUSCTRL_BUS_PRIORITY_PROC1_BITS;
-    multicore_launch_core1(board);
-
-    set_sys_clock_khz(200000, false);
+    a2pico_init(board);
 
     if (a2pico_led() >= 0) {
         gpio_init(a2pico_led());

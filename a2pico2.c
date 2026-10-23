@@ -24,7 +24,10 @@ SOFTWARE.
 
 */
 
+#include <pico/multicore.h>
 #include <hardware/adc.h>
+#include <hardware/clocks.h>
+#include <hardware/structs/busctrl.h>
 #include <hardware/structs/sysinfo.h>
 
 #include "a2pico2.pio.h"
@@ -46,6 +49,8 @@ static struct {
 #define IS_LITE (sysinfo_hw->package_sel & 0b1)
 
 static void(*a2_resethandler)(bool);
+
+static void(*a2_core1handler)(void);
 
 static void(*a2_synchandler)(void);
 
@@ -74,7 +79,25 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
     }
 }
 
-void a2pico_init(void) {
+static void a2_core1(void) {
+#ifdef A2PICO2
+    if (IS_LITE) {
+        a2_reset(0, GPIO_IRQ_EDGE_RISE);
+    } else
+#endif
+    {
+        gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
+                                                     | GPIO_IRQ_EDGE_RISE, true, a2_reset);
+        if (gpio_get(GPIO_RESET)) {
+            a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
+        }
+    }
+    a2_core1handler();
+}
+
+void a2pico_init(void (*core1handler)(void)) {
+    set_sys_clock_khz(200000, false);
+
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
         pio_gpio_init(pio0, gpio);
         gpio_disable_pulls(gpio);
@@ -103,7 +126,6 @@ void a2pico_init(void) {
         a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
     }
     addr_program_set_config(&a2_sm[SM_ADDR].config);
-
 
 #ifdef A2PICO2
     if (IS_LITE) {
@@ -146,8 +168,6 @@ void a2pico_init(void) {
         pio_sm_init(pio1, SM_IOSTRB, offset, &config);
 
         pio_set_sm_mask_enabled(pio1, 0b0111, true);
-
-        a2_reset(0, GPIO_IRQ_EDGE_RISE);
     } else
 #endif
     {
@@ -156,13 +176,11 @@ void a2pico_init(void) {
 
         gpio_init(GPIO_RESET);
         gpio_disable_pulls(GPIO_RESET);
-
-        gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
-                                                        | GPIO_IRQ_EDGE_RISE, true, a2_reset);
-        if (gpio_get(GPIO_RESET)) {
-            a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
-        }
     }
+
+    a2_core1handler = core1handler;
+    busctrl_hw->priority = BUSCTRL_BUS_PRIORITY_PROC1_BITS;
+    multicore_launch_core1(a2_core1);
 }
 
 bool a2pico_sd(void) {

@@ -29,9 +29,6 @@ SOFTWARE.
 #include "board.h"
 
 void __time_critical_func(board)(void) {
-
-    a2pico_init();
-
     while (true) {
         uint32_t pico = a2pico_getaddr();
         uint32_t addr = pico & 0x0FFF;

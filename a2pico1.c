@@ -24,6 +24,10 @@ SOFTWARE.
 
 */
 
+#include <pico/multicore.h>
+#include <hardware/clocks.h>
+#include <hardware/structs/busctrl.h>
+
 #include "a2pico1.pio.h"
 
 #include "a2pico.h"
@@ -36,6 +40,8 @@ static struct {
 } a2_sm[3];
 
 static void(*a2_resethandler)(bool);
+
+static void(*a2_core1handler)(void);
 
 static void(*a2_synchandler)(void);
 
@@ -64,7 +70,18 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
     }
 }
 
-void a2pico_init(void) {
+static void a2_core1(void) {
+    gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
+                                                 | GPIO_IRQ_EDGE_RISE, true, a2_reset);
+    if (gpio_get(GPIO_RESET)) {
+        a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
+    }
+    a2_core1handler();
+}
+
+void a2pico_init(void (*core1handler)(void)) {
+    set_sys_clock_khz(200000, false);
+
     pio_gpio_init(pio0, GPIO_ENBL);
     gpio_disable_pulls(GPIO_ENBL);
 
@@ -104,11 +121,9 @@ void a2pico_init(void) {
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 
-    gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
-                                                 | GPIO_IRQ_EDGE_RISE, true, a2_reset);
-    if (gpio_get(GPIO_RESET)) {
-        a2_reset(GPIO_RESET, GPIO_IRQ_EDGE_RISE);
-    }                                                 
+    a2_core1handler = core1handler;
+    busctrl_hw->priority = BUSCTRL_BUS_PRIORITY_PROC1_BITS;
+    multicore_launch_core1(a2_core1);
 }
 
 bool a2pico_sd(void) {

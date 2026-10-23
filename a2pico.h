@@ -45,23 +45,7 @@ SOFTWARE.
 
 #endif
 
-void a2pico_init(void);
-
-bool a2pico_sd(void);
-
-bool a2pico_radio(void);
-
-bool a2pico_eth(void);
-
-int a2pico_led(void);
-
-int a2pico_tx(void);
-
-int a2pico_rx(void);
-
-void a2pico_resethandler(void(*handler)(bool asserted));
-
-void a2pico_synchandler(void(*handler)(void), uint32_t counter);
+void a2pico_init(void (*core1handler)(void));
 
 static __always_inline uint32_t a2pico_getaddr(void) {
     while (pio0->fstat & (1u << (PIO_FSTAT_RXEMPTY_LSB + SM_ADDR))) {
@@ -85,5 +69,21 @@ static __always_inline void a2pico_putdata(uint32_t data) {
 static __always_inline void a2pico_irq(bool assert) {
     gpio_set_dir(GPIO_IRQ, assert ? GPIO_OUT : GPIO_IN);
 }
+
+bool a2pico_sd(void);
+
+bool a2pico_radio(void);
+
+bool a2pico_eth(void);
+
+int a2pico_led(void);
+
+int a2pico_tx(void);
+
+int a2pico_rx(void);
+
+void a2pico_resethandler(void(*handler)(bool asserted));
+
+void a2pico_synchandler(void(*handler)(void), uint32_t counter);
 
 #endif
