@@ -13,7 +13,12 @@ function(a2pico_init)
 
         target_sources(a2pico INTERFACE ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/a2pico${A2PICO}.c)
 
-        target_link_libraries(a2pico INTERFACE hardware_adc hardware_pio pico_stdlib)
+        target_link_libraries(a2pico INTERFACE
+                hardware_adc
+                hardware_flash
+                hardware_pio
+                pico_multicore
+                pico_stdlib)
 
         pico_generate_pio_header(a2pico ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/a2pico${A2PICO}.pio)
 endfunction()
