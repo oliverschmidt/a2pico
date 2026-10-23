@@ -40,9 +40,7 @@ static struct {
 } a2_sm[3];
 
 static void(*a2_resethandler)(bool);
-
 static void(*a2_core1handler)(void);
-
 static void(*a2_synchandler)(void);
 
 static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {

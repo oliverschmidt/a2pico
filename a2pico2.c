@@ -27,6 +27,7 @@ SOFTWARE.
 #include <pico/multicore.h>
 #include <hardware/adc.h>
 #include <hardware/clocks.h>
+#include <hardware/flash.h>
 #include <hardware/structs/busctrl.h>
 #include <hardware/structs/sysinfo.h>
 
@@ -46,12 +47,12 @@ static struct {
     pio_sm_config config;
 } a2_sm[3];
 
-#define IS_LITE (sysinfo_hw->package_sel & 0b1)
+static bool a2_lite;
+static bool a2_radio;
+static bool a2_eth;
 
 static void(*a2_resethandler)(bool);
-
 static void(*a2_core1handler)(void);
-
 static void(*a2_synchandler)(void);
 
 static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
@@ -80,12 +81,9 @@ static void __time_critical_func(a2_reset)(uint gpio, uint32_t events) {
 }
 
 static void a2_core1(void) {
-#ifdef A2PICO2
-    if (IS_LITE) {
+    if (a2_lite && !a2_radio) {
         a2_reset(0, GPIO_IRQ_EDGE_RISE);
-    } else
-#endif
-    {
+    } else {
         gpio_set_irq_enabled_with_callback(GPIO_RESET, GPIO_IRQ_EDGE_FALL
                                                      | GPIO_IRQ_EDGE_RISE, true, a2_reset);
         if (gpio_get(GPIO_RESET)) {
@@ -97,6 +95,37 @@ static void a2_core1(void) {
 
 void a2pico_init(void (*core1handler)(void)) {
     set_sys_clock_khz(200000, false);
+    adc_init();
+
+    a2_lite = sysinfo_hw->package_sel & 0b1;  // QFN-60
+    if (a2_lite) {
+        uint8_t txbuf[4] = {0x9F};  // JEDEC Read ID Command
+        uint8_t rxbuf[4] = {};
+
+        uint32_t save = save_and_disable_interrupts();
+        flash_do_cmd(txbuf, rxbuf, sizeof(txbuf)); 
+        restore_interrupts(save);
+
+        if (rxbuf[3] == 0x16) {  // JEDEC Capacity ID == 4 MB
+            // 'Connecting to the Internet with Raspberry Pi Pico W-series.'
+            //     section 'Which hardware am I running on?'
+            //
+            // adc_gpio_init(29); isn't allowed if PICO_RP2350A equals 0
+            gpio_set_function(29, GPIO_FUNC_NULL);
+            gpio_disable_pulls(29);
+            gpio_set_input_enabled(29, false);
+
+            adc_select_input(3);
+            a2_radio = adc_read() < 500;
+        } else {
+            a2_radio = false;
+        }
+        a2_eth = false;
+    } else {
+        gpio_init(41);
+        a2_radio = gpio_get(41);
+        a2_eth = gpio_get(41);
+    }
 
     for (uint gpio = GPIO_ADDR; gpio < GPIO_ADDR + SIZE_ADDR; gpio++) {
         pio_gpio_init(pio0, gpio);
@@ -115,25 +144,19 @@ void a2pico_init(void (*core1handler)(void)) {
 
     pio_claim_sm_mask(pio0, 0b1111);  // incl. sync
 
-#ifdef A2PICO2
-    if (IS_LITE) {
+    if (a2_lite && !a2_radio) {
         a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_indirect_program);
         a2_sm[SM_ADDR].config = addr_indirect_program_get_default_config(a2_sm[SM_ADDR].offset);
-    } else
-#endif
-    {
+    } else {
         a2_sm[SM_ADDR].offset = pio_add_program(pio0, &addr_program);
         a2_sm[SM_ADDR].config = addr_program_get_default_config(a2_sm[SM_ADDR].offset);
     }
     addr_program_set_config(&a2_sm[SM_ADDR].config);
 
-#ifdef A2PICO2
-    if (IS_LITE) {
+    if (a2_lite && !a2_radio) {
         a2_sm[SM_READ].offset = pio_add_program(pio0, &read_indirect_program);
         a2_sm[SM_READ].config = read_indirect_program_get_default_config(a2_sm[SM_READ].offset);
-    } else
-#endif
-    {
+    } else {
         a2_sm[SM_READ].offset = pio_add_program(pio0, &read_program);
         a2_sm[SM_READ].config = read_program_get_default_config(a2_sm[SM_READ].offset);
     }
@@ -143,8 +166,7 @@ void a2pico_init(void (*core1handler)(void)) {
     a2_sm[SM_WRITE].config = write_program_get_default_config(a2_sm[SM_WRITE].offset);
     write_program_set_config(&a2_sm[SM_WRITE].config);
 
-#ifdef A2PICO2
-    if (IS_LITE) {
+    if (a2_lite && !a2_radio) {
         for (uint gpio = GPIO_DEVSEL; gpio < GPIO_DEVSEL + SIZE_ENBL; gpio++) {
             pio_gpio_init(pio1, gpio);
             gpio_disable_pulls(gpio);
@@ -168,9 +190,7 @@ void a2pico_init(void (*core1handler)(void)) {
         pio_sm_init(pio1, SM_IOSTRB, offset, &config);
 
         pio_set_sm_mask_enabled(pio1, 0b0111, true);
-    } else
-#endif
-    {
+    } else {
         pio_gpio_init(pio0, GPIO_ENBL);
         gpio_disable_pulls(GPIO_ENBL);
 
@@ -184,71 +204,42 @@ void a2pico_init(void (*core1handler)(void)) {
 }
 
 bool a2pico_sd(void) {
-#ifdef A2PICO2
-    if (IS_LITE) {
-        return false;
-    }
-    return true;
-#else
-    return false;
-#endif
+    return !a2_lite;
 }
 
 bool a2pico_radio(void) {
-#ifdef A2PICO2
-    if (IS_LITE) {
-        return false;
-    }
-    gpio_init(41);
-    return gpio_get(41);
-#else
-    return true;
-#endif
+    return a2_radio;
 }
 
 bool a2pico_eth(void) {
-#ifdef A2PICO2
-    if (IS_LITE) {
-        return false;
-    }
-    gpio_init(41);
-    return gpio_get(41);
-#else
-    return false;
-#endif
+    return a2_eth;
 }
 
 int a2pico_led(void) {
-#ifdef A2PICO2
-    if (IS_LITE) {
+    if (a2_lite) {
+        if (a2_radio) {
+            return -1;
+        }
         return 25;
     }
     return 28;
-#else
-    return -1;
-#endif
 }
 
 int a2pico_tx(void) {
-#ifdef A2PICO2
-    if (IS_LITE) {
+    if (a2_lite) {
+        if (a2_radio) {
+            return 28;
+        }
         return -1;
     }
     return 32;
-#else
-    return 28;
-#endif
 }
 
 int a2pico_rx(void) {
-#ifdef A2PICO2
-    if (IS_LITE) {
+    if (a2_lite) {
         return -1;
     }
     return 33;
-#else
-    return -1;
-#endif
 }
 
 void a2pico_resethandler(void(*handler)(bool)) {
