@@ -53,7 +53,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 | Appli-Card        | https://github.com/oliverschmidt/appli-card            |              |              |               |
 | Super Serial Card | https://github.com/oliverschmidt/super-serial-card     |              |              |               |
 | Mockingboard      | https://github.com/shunkita/a2picoMb                   |              | required     |               |
-| Apple2-IO-RPi     | https://github.com/tjboldt/Apple2-IO-RPi               |              |              |               |
+| Apple2-IO-RPi     | https://github.com/oliverschmidt/Apple2-IO-RPi         |              |              |               |
 | Apple II Pi       | https://github.com/oliverschmidt/apple2pi              |              |              |               |
 | Brutal Timer      | https://github.com/oliverschmidt/brutal-timer          |              |              |               |
 | Bad Apple !!gs    | https://github.com/oliverschmidt/bad-apple-iigs        | required     |              |               |
@@ -61,12 +61,7 @@ A2Pico is about Apple II peripheral cards based on the [Raspberry Pi Pico](https
 
 ### Flashing of a Firmware
 
-A2Pico firmwares come in two types:
-
-* `<project>_A2Pico_<date>.uf2` is intended for the _Original A2Pico_.
-* `<project>_A2Pico2_<date>.uf2` is intended for all A2Pico2 cards.
-
-The actual firmware flashing process is extremely simple and foolproof:
+Every A2Pico firmware is flashed in the same, extremely simple, and foolproof way:
 
 * _A2Pico2Lite_: Make sure the card is not inserted into an Apple II slot.
 * All other A2Pico cards: It doesn't matter wether the card is inserted into an Apple II slot or not. Just make sure the Apple II turned off if the card is inserted.
