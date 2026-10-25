@@ -86,4 +86,12 @@ void a2pico_resethandler(void(*handler)(bool asserted));
 
 void a2pico_synchandler(void(*handler)(void), uint32_t counter);
 
+bool a2pico_save_wifi_credentials(const char *ssid, const char *passwd);
+
+bool a2pico_load_wifi_credentials(const char **ssid, const char **passwd);
+
+void a2pico_delete_wifi_credentials(void);
+
+uint32_t a2pico_flashsize(void);
+
 #endif

@@ -68,13 +68,36 @@ void main(void) {
 
         int data = getchar_timeout_us(0);
         if (data != PICO_ERROR_TIMEOUT) {
-            if (data == 27) {
-                a2pico_irq(true);
-            }
-            else if (multicore_fifo_wready()) {
-                multicore_fifo_push_blocking(data);
-            } else {
-                putchar('\a');
+            switch (data) {
+                case 4:  // Ctrl-D
+                    a2pico_delete_wifi_credentials();
+                    printf(" DELETE ");
+                    break;
+                case 12:  // Ctrl-L
+                    const char *ssid;
+                    const char *passwd;
+                    if (a2pico_load_wifi_credentials(&ssid, &passwd)) {
+                        printf(" LOAD(\"%s\",\"%s\") ", ssid, passwd);
+                    } else {
+                        printf(" LOAD(N/A) ");
+                    }
+                    break;
+                case 19:  // Ctrl-S
+                    if (a2pico_save_wifi_credentials("MySSID", "MyPasswd")) {
+                        printf(" SAVE(\"MySSID\",\"MyPasswd\") ");
+                    } else {
+                        printf(" SAVE(N/A) ");
+                    }
+                    break;
+                case 27:  // Esc
+                    a2pico_irq(true);
+                    break;
+                default:
+                    if (multicore_fifo_wready()) {
+                        multicore_fifo_push_blocking(data);
+                    } else {
+                        putchar('\a');
+                    }
             }
         }
 
