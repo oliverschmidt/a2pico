@@ -93,20 +93,24 @@ static void a2_core1(void) {
     a2_core1handler();
 }
 
+static uint8_t __no_inline_not_in_flash_func(flash_capacity)(void) {
+    uint8_t txbuf[4] = {0x9F};  // JEDEC Read ID Command
+    uint8_t rxbuf[4] = {};
+
+    uint32_t save = save_and_disable_interrupts();
+    flash_do_cmd(txbuf, rxbuf, sizeof(txbuf)); 
+    restore_interrupts(save);
+
+    return rxbuf[3];
+}
+
 void a2pico_init(void (*core1handler)(void)) {
     set_sys_clock_khz(200000, false);
     adc_init();
 
     a2_lite = sysinfo_hw->package_sel & 0b1;  // QFN-60
     if (a2_lite) {
-        uint8_t txbuf[4] = {0x9F};  // JEDEC Read ID Command
-        uint8_t rxbuf[4] = {};
-
-        uint32_t save = save_and_disable_interrupts();
-        flash_do_cmd(txbuf, rxbuf, sizeof(txbuf)); 
-        restore_interrupts(save);
-
-        if (rxbuf[3] == 0x16) {  // JEDEC Capacity ID == 4 MB
+        if (flash_capacity() == 0x16) {  // JEDEC Capacity ID == 4 MB
             // 'Connecting to the Internet with Raspberry Pi Pico W-series.'
             //     section 'Which hardware am I running on?'
             //
