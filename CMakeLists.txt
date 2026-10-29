@@ -24,6 +24,8 @@ function(a2pico_init)
                 pico_stdlib
                 )
 
+        target_compile_definitions(a2pico INTERFACE CYW43_PIO_CLOCK_DIV=3)
+
         pico_generate_pio_header(a2pico ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/a2pico${A2PICO}.pio)
 endfunction()
 
